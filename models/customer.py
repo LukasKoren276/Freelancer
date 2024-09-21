@@ -7,6 +7,7 @@ class Customer(Base):
     __tablename__ = 'customers'
 
     customer_id = Column(Integer, primary_key=True)
+    company_name = Column(String(255), nullable=True)
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
     street = Column(String(100), nullable=False)

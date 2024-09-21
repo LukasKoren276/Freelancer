@@ -1,7 +1,8 @@
 
 import tkinter as tk
-
 from sqlalchemy.orm import Session
+
+from .newCustomerWindow import NewCustomerWindow
 from .settingsWindow import SettingsWindow
 
 
@@ -57,7 +58,8 @@ class MainWindow(tk.Tk):
         settings_window.grab_set()
 
     def open_new_customer(self):
-        pass
+        new_customer_window = NewCustomerWindow(self, self.session)
+        new_customer_window.grab_set()
 
     def open_edit_customer(self):
         pass

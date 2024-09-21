@@ -1,9 +1,9 @@
-
 import tkinter as tk
 from tkinter import messagebox
 from sqlalchemy.orm import Session
 
 from models import UserSettings
+from Gui.dataValidation import DataValidation
 
 
 class SettingsWindow(tk.Toplevel):
@@ -18,7 +18,7 @@ class SettingsWindow(tk.Toplevel):
         self.resizable(False, False)
         self.label = tk.Label(self, text='Settings')
         self.label.grid(row=0, column=0, padx=10, pady=10)
-        self.columnconfigure(0, weight=1)  # Ensure column 0 takes available space
+        self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.first_name_var = tk.StringVar()
         self.last_name_var = tk.StringVar()
@@ -53,8 +53,8 @@ class SettingsWindow(tk.Toplevel):
             self.vat_var.set(user_settings.vat)
 
     def create_window_objects(self):
-        is_integer = (self.register(self.integer), '%P')
-        is_integer_or_empty = (self.register(self.integer_or_empty), '%P')
+        is_integer = (self.register(DataValidation.integer), '%P')
+        is_integer_or_empty = (self.register(DataValidation.integer_or_empty), '%P')
 
         text_first_name = tk.Label(self, text='First Name')
         text_first_name.grid(row=1, column=0, padx=5, pady=5, sticky="W")
@@ -142,28 +142,6 @@ class SettingsWindow(tk.Toplevel):
 
         close_and_save_button = tk.Button(self, text="Save and Close", command=self.close_and_save_window)
         close_and_save_button.grid(row=13, column=0, columnspan=2, padx=5, pady=50)
-
-    @staticmethod
-    def integer(new_value):
-        if new_value.isdigit():
-            return True
-
-        messagebox.showerror(
-            'Invalid Input',
-            'Please enter only numeric values.'
-        )
-        return False
-
-    @staticmethod
-    def integer_or_empty(new_value):
-        if new_value == "" or new_value.isdigit():
-            return True
-
-        messagebox.showerror(
-            'Invalid Input',
-            'Please enter only numeric values or keep the field empty.'
-        )
-        return False
 
     def close_and_save_window(self):
         user_settings = self.session.query(UserSettings).first()
