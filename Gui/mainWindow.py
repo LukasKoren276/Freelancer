@@ -1,4 +1,4 @@
-
+from math import floor
 import tkinter as tk
 from sqlalchemy.orm import Session
 
@@ -19,6 +19,19 @@ class MainWindow(tk.Tk):
         self.label = tk.Label(self, text='Welcome to the Invoicer Application!')
         self.label.grid(row=0, column=0, padx=10, pady=10)
         self.center_window()
+
+        self.button_definitions = {
+            'New Customer': self.new_customer,
+            'Edit Customer': self.edit_customer,
+            'New Project': self.new_project,
+            'Edit Project': self.edit_project,
+            'Log Project Time': self.log_time,
+            'Edit Project Times': self.edit_log_time,
+            'Create Offer': self.create_offer,
+            'Create Invoice': self.create_invoice,
+            'Settings': self.settings,
+        }
+
         self.create_window_objects()
 
     def center_window(self):
@@ -29,55 +42,39 @@ class MainWindow(tk.Tk):
         self.geometry(f"{self.width}x{self.height}+{position_right}+{position_down}")
 
     def create_window_objects(self):
-        settings_button = tk.Button(self, text='Settings', command=self.open_settings, width=15, height=2)
-        settings_button.grid(row=1, column=0, padx=10, pady=10)
+        for index, (button_name, action) in enumerate(self.button_definitions.items()):
+            button = tk.Button(self, text=button_name, command=action, width=15, height=2)
+            button.grid(row=floor((index + 2)/2), column=index % 2, padx=10, pady=10)
 
-        new_customer_button = tk.Button(self, text='New Customer', command=self.open_new_customer, width=15, height=2)
-        new_customer_button.grid(row=2, column=0, padx=10, pady=10)
-
-        edit_customer_button = tk.Button(self, text='Edit Customer', command=self.open_edit_customer, width=15, height=2)
-        edit_customer_button.grid(row=2, column=1, padx=10, pady=10)
-
-        new_project_button = tk.Button(self, text='New Project', command=self.open_new_project, width=15, height=2)
-        new_project_button.grid(row=3, column=0, padx=10, pady=10)
-
-        edit_project_button = tk.Button(self, text='Edit Project', command=self.open_edit_project, width=15, height=2)
-        edit_project_button.grid(row=3, column=1, padx=10, pady=10)
-
-        time_log = tk.Button(self, text='Log Project Time', command=self.open_log_time, width=15, height=2)
-        time_log.grid(row=4, column=0, padx=10, pady=10)
-
-        time_log_edit = tk.Button(self, text='Edit Project Times', command=self.edit_log_time, width=15, height=2)
-        time_log_edit.grid(row=4, column=1, padx=10, pady=10)
-
-        create_invoice = tk.Button(self, text='Create Invoice', command=self.make_invoice, width=15, height=2)
-        create_invoice.grid(row=5, column=0, padx=10, pady=10)
-
-    def open_settings(self):
-        settings_window = SettingsWindow(self, self.session)
-        settings_window.grab_set()
-
-    def open_new_customer(self):
+    def new_customer(self):
         new_customer_window = NewCustomerWindow(self, self.session)
         new_customer_window.grab_set()
 
-    def open_edit_customer(self):
+    def edit_customer(self):
         pass
 
-    def open_new_project(self):
+    def new_project(self):
         pass
 
-    def open_edit_project(self):
+    def edit_project(self):
         pass
 
-    def open_log_time(self):
+    def log_time(self):
         pass
 
     def edit_log_time(self):
         pass
 
-    def make_invoice(self):
+    def create_offer(self):
         pass
+
+    def create_invoice(self):
+        pass
+
+    def settings(self):
+        settings_window = SettingsWindow(self, self.session)
+        settings_window.grab_set()
+
 
 # def show(self):
     #     if self.window is None:

@@ -1,4 +1,3 @@
-
 from sqlalchemy.orm import sessionmaker
 from config import engine
 from db_initialize import initialize_db

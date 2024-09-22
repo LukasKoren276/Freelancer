@@ -1,8 +1,7 @@
-
-
 from sqlalchemy import Column, Integer, ForeignKey, String
 from sqlalchemy.orm import relationship
 from . import Base
+
 
 class Price(Base):
     __tablename__ = 'prices'

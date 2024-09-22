@@ -6,17 +6,18 @@ class UserSettings(Base):
     __tablename__ = 'user_settings'
 
     id = Column(Integer, primary_key=True)
-    user_first_name = Column(String(50), nullable=True)
-    user_last_name = Column(String(50), nullable=True)
-    user_company_registration_number = Column(String(50), nullable=True)
-    user_street = Column(String(100), nullable=True)
-    user_street_number = Column(Integer, nullable=True)
-    user_city = Column(String(50), nullable=True)
-    user_country = Column(String(50), nullable=True)
-    user_registered_as = Column(String(255), nullable=True)
+    user_first_name = Column(String(50), nullable=False)
+    user_last_name = Column(String(50), nullable=False)
+    user_street = Column(String(100), nullable=False)
+    user_street_number = Column(Integer, nullable=False)
+    user_city = Column(String(50), nullable=False)
+    user_country = Column(String(50), nullable=False)
+    company_name = Column(String(255), nullable=True)
+    user_company_registration_number = Column(String(50), nullable=False)
+    user_registered_as = Column(String(255), nullable=False)
     invoice_due_date = Column(Integer, nullable=False)
     rate_per_hour = Column(Integer, nullable=False)
-    currency = Column(String(10), nullable=True)
+    currency = Column(String(10), nullable=False)
     vat = Column(Integer, nullable=True)
 
     def __repr__(self):
