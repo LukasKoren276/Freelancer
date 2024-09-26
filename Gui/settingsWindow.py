@@ -26,16 +26,16 @@ class SettingsWindow(tk.Toplevel):
             'user_first_name': (tk.StringVar(), 'First Name'),
             'user_last_name': (tk.StringVar(), 'Last Name'),
             'user_street': (tk.StringVar(), 'Street'),
-            'user_street_number': (tk.IntVar(), 'Street Number'),
+            'user_street_number': (tk.StringVar(), 'Street Number'),
             'user_city': (tk.StringVar(), 'City'),
             'user_country': (tk.StringVar(), 'Country'),
             'company_name': (tk.StringVar(), 'Company Name'),
             'user_company_registration_number': (tk.StringVar(), 'Company Registration Number'),
             'user_registered_as': (tk.StringVar(), 'User Registered As'),
-            'invoice_due_date': (tk.IntVar(), 'Invoice Due Date [days]'),
-            'rate_per_hour': (tk.IntVar(), 'Rate Per Hour'),
+            'invoice_due_date': (tk.StringVar(), 'Invoice Due Date [days]'),
+            'rate_per_hour': (tk.StringVar(), 'Rate Per Hour'),
             'currency': (tk.StringVar(), 'Currency'),
-            'vat': (tk.IntVar(), 'VAT [%]')
+            'vat': (tk.StringVar(), 'VAT [%]')
         }
 
         self.load_user_settings()
@@ -63,19 +63,17 @@ class SettingsWindow(tk.Toplevel):
 
     def save_and_close_window(self):
         user_settings = self.session.query(UserSettings).first()
+        validated_data = DataValidation.validate_data(UserSettings, self.fields)
 
-        if not DataValidation.is_data_valid(UserSettings, self.fields):
+        if validated_data is None:
             return
 
-        data = {field_name: var.get() for field_name, (var, _) in self.fields.items()}   # TODO error loading var.get() with wrong data type
-
-
         if not user_settings:
-            user_settings = UserSettings(**DataValidation.convert_empty_fields_to_null(data))
+            user_settings = UserSettings(**validated_data)
             self.session.add(user_settings)
         else:
-            for field_name, value in data.items():
-                setattr(user_settings, field_name, value if bool(value) else None)
+            for field_name, value in validated_data.items():
+                setattr(user_settings, field_name, value)
 
         try:
             self.session.commit()

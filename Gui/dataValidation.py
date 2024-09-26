@@ -1,57 +1,99 @@
-import tkinter as tk
+
 from tkinter import messagebox
-from sqlalchemy.inspection import inspect
+from sqlalchemy import inspect, Integer, String, DateTime
+from datetime import datetime
 
 
 class DataValidation:
-    @staticmethod
-    def positive_integer(value: int) -> bool:
-        if isinstance(value, int) and value > 0:
-            return True
+    date_formats = [
+        "%d.%m.%Y",
+        "%d. %m. %Y",
+        "%Y-%m-%d",
+        "%d/%m/%Y",
+        "%m/%d/%Y"
+    ]
 
-        return False
+    @staticmethod
+    def validate_integer(value: str, is_nullable: bool) -> int | None:
+        if value.strip() == '' and is_nullable:
+            return None
+
+        if value.strip().lstrip('-').isdigit():
+            int_value = int(value)
+
+            if int_value > 0:
+                return int_value
+
+            if int_value == 0:
+                return None if is_nullable else 0
+
+        return 0
 
     @staticmethod
-    def non_empty_string(value: str) -> bool:
+    def validate_string(value: str, is_nullable: bool) -> str:
+        if value.strip() != '':
+            return value.strip()
+        else:
+            return None if is_nullable else ''
+
+    @staticmethod
+    def validate_datetime(value: str, is_nullable: bool) -> datetime | str:
         if value.strip() == '':
-            return False
+            return None if is_nullable else ''
 
-        return True
+        for fmt in DataValidation.date_formats:
+            try:
+                return datetime.strptime(value.strip(), fmt)
+            except ValueError:
+                continue
+
+        return ''
 
     @staticmethod
-    def is_data_valid(model, fields: dict) -> bool:
+    def validate_data(model, fields: dict) -> dict | None:
         columns = inspect(model).c
+        validated_fields = {}
 
         for field_name, (var, _) in fields.items():
             value = var.get()
-            is_nullable = columns[field_name].nullable
+            column = columns[field_name]
+            is_nullable = column.nullable
 
-            if not is_nullable and isinstance(var, tk.IntVar):
-                if not DataValidation.positive_integer(value):
+            if isinstance(column.type, Integer):
+                new_value = DataValidation.validate_integer(value, is_nullable)
+
+                if new_value == 0:
                     messagebox.showwarning(
                         'Invalid Input',
-                        f'{field_name.replace("_", " ").title()} must be a positive integer.')
-
-                    return False
-
-            if not is_nullable and isinstance(var, tk.StringVar):
-                if not DataValidation.non_empty_string(value):
-                    messagebox.showwarning(
-                        'Invalid Input',
-                        f'{field_name.replace("_", " ").title()} cannot be empty.'
+                        f'{field_name.replace("_", " ").title()} must be a valid positive integer.'
                     )
+                    return
 
-                    return False
+            elif isinstance(column.type, String):
+                new_value = DataValidation.validate_string(value, is_nullable)
+                if new_value == '':
+                    messagebox.showwarning(
+                        'Invalid Input',
+                        f'{field_name.replace("_", " ").title()} must be a non-empty string.'
+                    )
+                    return
 
-        return True
+            elif isinstance(column.type, DateTime):
+                new_value = DataValidation.validate_datetime(value, is_nullable)
+                if new_value == '':
+                    messagebox.showwarning(
+                        'Invalid Input',
+                        f'Date must be in one of the accepted formats: {", ".join(DataValidation.date_formats)}.'
+                    )
+                    return
 
-    @staticmethod
-    def convert_empty_fields_to_null(data: dict) -> dict:
-        for field_name in data.keys():
-            if isinstance(data[field_name], int):
-                data[field_name] = None if data[field_name] == 0 else data[field_name]
+            else:
+                messagebox.showwarning(
+                    'Invalid Data Format',
+                    'Data Format not recognized.'
+                )
+                return
 
-            if isinstance(data[field_name], str):
-                data[field_name] = None if data[field_name] == '' else data[field_name]
-        return data
+            validated_fields[field_name] = new_value
 
+        return validated_fields
