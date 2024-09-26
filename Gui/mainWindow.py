@@ -2,6 +2,7 @@ from math import floor
 import tkinter as tk
 from sqlalchemy.orm import Session
 
+from .editCustomersWindow import EditCustomersWindow
 from .newCustomerWindow import NewCustomerWindow
 from .settingsWindow import SettingsWindow
 
@@ -51,7 +52,8 @@ class MainWindow(tk.Tk):
         new_customer_window.grab_set()
 
     def edit_customer(self):
-        pass
+        edit_customers_window = EditCustomersWindow(self, self.session)
+        edit_customers_window.grab_set()
 
     def new_project(self):
         pass

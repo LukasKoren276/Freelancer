@@ -14,7 +14,7 @@ class Customer(Base):
     street_number = Column(Integer, nullable=False)
     city = Column(String(50), nullable=False)
     country = Column(String(50), nullable=False)
-    company_registration_number = Column(String(50), nullable=True)
+    company_registration_number = Column(String(50), nullable=False)
 
     projects = relationship('Project', order_by='Project.project_id', back_populates='customer')
 
