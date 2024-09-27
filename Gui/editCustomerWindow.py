@@ -54,7 +54,7 @@ class EditCustomerWindow(tk.Toplevel):
         try:
             self.session.commit()
             messagebox.showinfo('Success', 'Customer updated successfully!')
-            self.parent.refresh_list()  # Refresh customer list in the EditCustomerWindow
+            self.parent.refresh_list()                                                                 # TODO here is some bug
         except Exception as e:
             messagebox.showinfo('Error', f'Failed to update the customer: {e}')
             self.session.rollback()

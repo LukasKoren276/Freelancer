@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
 from sqlalchemy.orm import Session
-from sqlalchemy.inspection import inspect
 
 from models import UserSettings
 from Gui.dataValidation import DataValidation

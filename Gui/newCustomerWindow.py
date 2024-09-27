@@ -1,4 +1,3 @@
-
 import tkinter as tk
 from tkinter import messagebox
 from sqlalchemy.orm import Session
@@ -13,7 +12,7 @@ class NewCustomerWindow(tk.Toplevel):
 
     def __init__(self, parent: tk.Tk, session: Session):
         super().__init__(parent)
-        self.title('Settings')
+        self.title('New Customer')
         self.session = session
         self.geometry(f'{self.width}x{self.height}')
         self.resizable(False, False)

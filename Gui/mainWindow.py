@@ -2,8 +2,10 @@ from math import floor
 import tkinter as tk
 from sqlalchemy.orm import Session
 
-from .editCustomersWindow import EditCustomersWindow
+from .customerSelectionWindow import CustomerSelectionWindow
+from .editCustomerWindow import EditCustomerWindow
 from .newCustomerWindow import NewCustomerWindow
+from .newPojectWindow import NewProjectWindow
 from .settingsWindow import SettingsWindow
 
 
@@ -52,11 +54,16 @@ class MainWindow(tk.Tk):
         new_customer_window.grab_set()
 
     def edit_customer(self):
-        edit_customers_window = EditCustomersWindow(self, self.session)
-        edit_customers_window.grab_set()
+        customer_selection_window = CustomerSelectionWindow(self, self.session, self.open_edit_customer_window)
+        customer_selection_window.grab_set()
+
+    def open_edit_customer_window(self, selected_customer):
+        edit_customer_window = EditCustomerWindow(self, self.session, selected_customer)
+        edit_customer_window.grab_set()
 
     def new_project(self):
-        pass
+        new_project_window = NewProjectWindow(self, self.session)
+        new_project_window.grab_set()
 
     def edit_project(self):
         pass
@@ -76,15 +83,3 @@ class MainWindow(tk.Tk):
     def settings(self):
         settings_window = SettingsWindow(self, self.session)
         settings_window.grab_set()
-
-
-# def show(self):
-    #     if self.window is None:
-    #         self.create_window()
-    #     self.window.deiconify()
-    #
-    # def hide(self):
-    #     self.window.withdraw()
-    #
-    # def destroy(self):
-    #     self.window.destroy()
