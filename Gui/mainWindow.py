@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 
 from .customerSelectionWindow import CustomerSelectionWindow
 from .editCustomerWindow import EditCustomerWindow
+from .editProjectWindow import EditProjectWindow
 from .newCustomerWindow import NewCustomerWindow
 from .newPojectWindow import NewProjectWindow
 from .settingsWindow import SettingsWindow
@@ -66,7 +67,8 @@ class MainWindow(tk.Tk):
         new_project_window.grab_set()
 
     def edit_project(self):
-        pass
+        edit_project_window = EditProjectWindow(self, self.session)
+        edit_project_window.grab_set()
 
     def log_time(self):
         pass
