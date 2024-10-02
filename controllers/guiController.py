@@ -17,7 +17,7 @@ from Gui.windowSetup import (
     edit_project_window_setup,
     edit_project_name_window_setup
 )
-from database.databaseManager import DatabaseManager
+from controllers.databaseManager import DatabaseManager
 from models import Customer, UserSettings, Project
 
 

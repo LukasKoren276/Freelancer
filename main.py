@@ -3,8 +3,8 @@ from sqlalchemy.orm import sessionmaker
 from models import Base
 
 from config import db_file, engine
-from Gui.guiController import GuiController
-from database.databaseManager import DatabaseManager
+from controllers.guiController import GuiController
+from controllers.databaseManager import DatabaseManager
 
 
 def initialize_db():
