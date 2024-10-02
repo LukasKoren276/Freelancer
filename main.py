@@ -1,7 +1,17 @@
+import os
 from sqlalchemy.orm import sessionmaker
-from config import engine
-from db_initialize import initialize_db
-from Gui import MainWindow
+from models import Base
+
+from config import db_file, engine
+from Gui.guiController import GuiController
+from database.databaseManager import DatabaseManager
+
+
+def initialize_db():
+    if not os.path.exists(db_file):
+        print(f"Database file not found. Creating new database... ", end='')
+        Base.metadata.create_all(engine)
+        print(f"Database initialized and tables created at: {db_file}")
 
 
 def start_application():
@@ -12,8 +22,9 @@ def start_application():
 
     Session = sessionmaker(bind=engine)
     session = Session()
-    app = MainWindow('INVOICER', session)
-    app.mainloop()
+    database_manager = DatabaseManager(session)
+    controller = GuiController(database_manager)
+    controller.open_main_window()
 
 
 if __name__ == "__main__":

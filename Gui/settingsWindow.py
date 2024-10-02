@@ -1,7 +1,6 @@
 import tkinter as tk
-from tkinter import messagebox
-from sqlalchemy.orm import Session
 
+from Gui.windowDetails import WindowDetails
 from models import UserSettings
 from Gui.dataValidation import DataValidation
 
@@ -10,14 +9,12 @@ class SettingsWindow(tk.Toplevel):
     width = 500
     height = 550
 
-    def __init__(self, parent: tk.Tk, session: Session):
+    def __init__(self, parent, controller, window_details: WindowDetails):
         super().__init__(parent)
-        self.title('Settings')
-        self.session = session
-        self.geometry(f'{self.width}x{self.height}')
-        self.resizable(False, False)
-        self.label = tk.Label(self, text='Settings')
-        self.label.grid(row=0, column=0, padx=10, pady=10)
+        self.controller = controller
+        self.title(window_details.title)
+        self.geometry(window_details.geometry)
+        self.resizable(*window_details.resizable)
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
@@ -41,7 +38,7 @@ class SettingsWindow(tk.Toplevel):
         self.create_window_objects()
 
     def load_user_settings(self):
-        user_settings = self.session.query(UserSettings).first()
+        user_settings = self.controller.get_user_settings()
 
         if user_settings:
             for field_name, (var, _) in self.fields.items():
@@ -61,25 +58,16 @@ class SettingsWindow(tk.Toplevel):
         save_and_close_button.grid(row=14, column=0, columnspan=2, padx=5, pady=50)
 
     def save_and_close_window(self):
-        user_settings = self.session.query(UserSettings).first()
+        user_settings = self.controller.get_user_settings()
         validated_data = DataValidation.validate_data(UserSettings, self.fields)
 
         if validated_data is None:
             return
 
         if not user_settings:
-            user_settings = UserSettings(**validated_data)
-            self.session.add(user_settings)
+            self.controller.save_user_settings(validated_data)
         else:
-            for field_name, value in validated_data.items():
-                setattr(user_settings, field_name, value)
+            self.controller.update_user_settings(user_settings, validated_data)
 
-        try:
-            self.session.commit()
-            messagebox.showinfo('Success', 'User settings saved successfully!')
-        except Exception as e:
-            messagebox.showinfo('Error', f'Failed to save user settings: {e}')
-            self.session.rollback()
-        finally:
-            self.grab_release()
-            self.destroy()
+        self.grab_release()
+        self.destroy()

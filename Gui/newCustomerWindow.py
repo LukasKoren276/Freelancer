@@ -1,21 +1,18 @@
 import tkinter as tk
-from tkinter import messagebox
-from sqlalchemy.orm import Session
 
 from Gui.dataValidation import DataValidation
+from Gui.windowDetails import WindowDetails
 from models import Customer
 
 
 class NewCustomerWindow(tk.Toplevel):
-    width = 500
-    height = 550
 
-    def __init__(self, parent: tk.Tk, session: Session):
+    def __init__(self, parent: tk.Tk, controller, window_details: WindowDetails):
         super().__init__(parent)
-        self.title('New Customer')
-        self.session = session
-        self.geometry(f'{self.width}x{self.height}')
-        self.resizable(False, False)
+        self.controller = controller
+        self.title(window_details.title)
+        self.geometry(window_details.geometry)
+        self.resizable(*window_details.resizable)
         self.label = tk.Label(self, text='New Customer')
         self.label.grid(row=0, column=0, padx=10, pady=10)
         self.columnconfigure(0, weight=1)
@@ -52,15 +49,6 @@ class NewCustomerWindow(tk.Toplevel):
         if validated_data is None:
             return
 
-        new_customer = Customer(**validated_data)
-        self.session.add(new_customer)
-
-        try:
-            self.session.commit()
-            messagebox.showinfo('Success', 'Customer saved successfully!')
-        except Exception as e:
-            messagebox.showinfo('Error', f'Failed to save the customer: {e}')
-            self.session.rollback()
-        finally:
-            self.grab_release()
-            self.destroy()
+        self.controller.save_customer(validated_data)
+        self.grab_release()
+        self.destroy()

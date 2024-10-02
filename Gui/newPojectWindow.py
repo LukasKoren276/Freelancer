@@ -1,22 +1,24 @@
 import tkinter as tk
 from tkinter import messagebox, font
-from sqlalchemy.orm import Session
 
-from Gui.customerSelectionWindow import CustomerSelectionWindow
-from models import Project, Customer
+from Gui.dataValidation import DataValidation
+from Gui.windowDetails import WindowDetails
+from models import Project
 
 
 class NewProjectWindow(tk.Toplevel):
     width = 550
     height = 300
 
-    def __init__(self, parent: tk.Tk, session: Session):
+    def __init__(self, parent,  controller, window_details: WindowDetails):
         super().__init__(parent)
-        self.title('New Project')
-        self.session = session
-        self.geometry(f'{self.width}x{self.height}')
-        self.resizable(False, False)
-        self.selected_customer_id = None
+        self.controller = controller
+        self.window_details = window_details
+        self.title(self.window_details.title)
+        self.geometry(self.window_details.geometry)
+        self.resizable(*self.window_details.resizable)
+        self.customer = None
+        self.customer_label = None
 
         self.fields = {
             'project_name': (tk.StringVar(), 'Project Name')
@@ -29,7 +31,7 @@ class NewProjectWindow(tk.Toplevel):
         label_customer.grid(row=0, column=0, padx=5, pady=20, sticky='S')
         self.customer_label = tk.Label(self, text="No customer selected")
         self.customer_label.grid(row=0, column=1, padx=5, pady=5)
-        select_customer_button = tk.Button(self, text="Select Customer", command=self.open_customer_list_window)
+        select_customer_button = tk.Button(self, text="Select Customer", command=self.set_selected_customer)
         select_customer_button.grid(row=0, column=3, padx=5, pady=20, sticky='S')
         label_project_name = tk.Label(self, text="Project Name")
         label_project_name.grid(row=1, column=0, padx=5, pady=5, sticky='W')
@@ -38,39 +40,27 @@ class NewProjectWindow(tk.Toplevel):
         submit_button = tk.Button(self, text="Save and Close", command=self.submit)
         submit_button.grid(row=3, column=0, columnspan=2, pady=20)
 
-    def open_customer_list_window(self):
-        self.customer_list_window = CustomerSelectionWindow(self, self.session, self.set_selected_customer)
-
-    def set_selected_customer(self, customer: Customer):
-        self.selected_customer_id = customer.customer_id
+    def set_selected_customer(self):
+        self.customer = self.controller.open_customer_selection(self)
         self.customer_label.config(
-            text=f'{customer.company_name}' if customer.company_name else f'{customer.first_name} {customer.last_name}',
-            font=font.Font(family="Helvetica", size=10, weight="bold"))                                                     # TODO move fonts to a separate class Fonts
+            text=f'{self.customer.company_name}'
+            if self.customer.company_name
+            else f'{self.customer.first_name} {self.customer.last_name}',
+            font=font.Font(family="Helvetica", size=10, weight="bold")
+        )
+        # TODO move fonts to a separate class Fonts
 
     def submit(self):
-        project_name = self.fields['project_name'][0].get()
+        validated_data = DataValidation.validate_data(Project, self.fields)
 
-        if not project_name:
-            messagebox.showwarning("Validation Error", "Project Name cannot be empty.")
+        if not self.customer.customer_id:
+            messagebox.showwarning('Invalid Input', 'Please select a customer for the project.')
             return
 
-        if not self.selected_customer_id:
-            messagebox.showwarning("Validation Error", "Please select a customer for the project.")
+        if validated_data is None:
             return
 
-        new_project = Project(
-            project_name=project_name,
-            customer_id=self.selected_customer_id
-        )
-
-        self.session.add(new_project)
-
-        try:
-            self.session.commit()
-            messagebox.showinfo('Success', 'Project saved successfully!')
-        except Exception as e:
-            messagebox.showinfo('Error', f'Failed to save the project: {e}')
-            self.session.rollback()
-        finally:
-            self.grab_release()
-            self.destroy()
+        validated_data.update({'customer_id': self.customer.customer_id})
+        self.controller.save_project(validated_data)
+        self.grab_release()
+        self.destroy()
