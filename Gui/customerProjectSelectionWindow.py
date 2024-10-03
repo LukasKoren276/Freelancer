@@ -1,17 +1,18 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, font
 
-from .windowDetails import WindowDetails
+from Gui.windowDetails import WindowDetails
 
 
-class EditProjectWindow(tk.Toplevel):
+class CustomerProjectSelectionWindow(tk.Toplevel):
     width = 450
     height = 250
 
-    def __init__(self, parent,  controller, window_details: WindowDetails):
+    def __init__(self, parent,  controller, window_details: WindowDetails, callback):
         super().__init__(parent)
         self.controller = controller
         self.window_details = window_details
+        self.callback = callback
         self.title(self.window_details.title)
         self.geometry(self.window_details.geometry)
         self.resizable(*self.window_details.resizable)
@@ -30,7 +31,7 @@ class EditProjectWindow(tk.Toplevel):
         project_label.grid(row=2, column=0, padx=10, pady=10)
         self.project_combobox = ttk.Combobox(self, state="readonly", width=40)
         self.project_combobox.grid(row=2, column=1, padx=10, pady=10)
-        edit_project_button = tk.Button(self, text="Edit Project", command=self.open_edit_project_window)
+        edit_project_button = tk.Button(self, text="Edit Project", command=self.open_next_window)
         edit_project_button.grid(row=3, column=0, columnspan=2, padx=10, pady=20)
 
     def set_selected_customer(self):
@@ -50,10 +51,11 @@ class EditProjectWindow(tk.Toplevel):
         projects = self.controller.get_customer_projects(self.customer.customer_id)
         project_names = [project.project_name for project in projects]
         self.project_combobox['values'] = project_names
+
         if project_names:
             self.project_combobox.current(0)
 
-    def open_edit_project_window(self):
+    def open_next_window(self):
         selected_project_name = self.project_combobox.get()
 
         if not selected_project_name:
@@ -66,10 +68,11 @@ class EditProjectWindow(tk.Toplevel):
         )
 
         if self.selected_project:
-            self.controller.edit_project_name(self.customer, self.selected_project)
+            self.callback(self.customer, self.selected_project)
             self.refresh_project_list()
-            self.grab_release()
-            self.destroy()
+
+        self.grab_release()
+        self.destroy()
 
     def refresh_project_list(self):
         self.load_customer_projects()

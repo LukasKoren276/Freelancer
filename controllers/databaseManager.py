@@ -2,7 +2,7 @@ import re
 from tkinter import messagebox
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
-from models import Customer, UserSettings, Base, Project
+from models import Customer, UserSettings, Base, Project, Price, Item
 
 
 class DatabaseManager:
@@ -16,6 +16,18 @@ class DatabaseManager:
         new_entity = entity_type(**entity_data)
         self.session.add(new_entity)
         self.__commit_or_rollback(new_entity.__class__.__name__)
+
+    def __save_entity_and_return_entity(self, entity_type: Base, entity_data: dict) -> Base | None:
+        new_entity = entity_type(**entity_data)
+        self.session.add(new_entity)
+
+        try:
+            self.session.flush()
+            return new_entity
+        except Exception as e:
+            messagebox.showinfo('Error', f'Failed to save {self.__split_camel_case(entity_type.__class__.__name__)} \n{e}"')
+            self.session.rollback()
+            return None
 
     def __update_entity(self, original_entity: Base, new_entity_data: dict) -> None:
         for field_name, value in new_entity_data.items():
@@ -76,3 +88,16 @@ class DatabaseManager:
 
     def update_user_settings(self, original_user_settings: UserSettings, user_settings_data: dict) -> None:
         self.__update_entity(original_user_settings, user_settings_data)
+
+    def get_item_price(self, item_id) -> int | None:
+        return self.session.query(Price).filter_by(item_id=item_id).first()
+
+    def save_item_with_price(self, item_data, price_data):
+        item = self.__save_entity_and_return_entity(Item, item_data)
+
+        if item is None:
+            return
+
+        price_data.update({'item_id': item.item_id})
+        self.__save_entity(Price, price_data)
+

@@ -42,6 +42,7 @@ class NewProjectWindow(tk.Toplevel):
 
     def set_selected_customer(self):
         self.customer = self.controller.open_customer_selection(self)
+
         self.customer_label.config(
             text=f'{self.customer.company_name}'
             if self.customer.company_name

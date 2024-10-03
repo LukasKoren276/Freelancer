@@ -2,12 +2,15 @@ import os
 from sqlalchemy.orm import sessionmaker
 from models import Base
 
-from config import db_file, engine
+from config import db_file, db_folder, engine
 from controllers.guiController import GuiController
 from controllers.databaseManager import DatabaseManager
 
 
 def initialize_db():
+    if not os.path.exists(db_folder):
+        os.makedirs(db_folder)
+
     if not os.path.exists(db_file):
         print(f"Database file not found. Creating new database... ", end='')
         Base.metadata.create_all(engine)

@@ -1,10 +1,11 @@
 from Gui.editProjectNameWindow import EditProjectNameWindow
+from Gui.itemDetailsWindow import ItemDetailsWindow
 from Gui.settingsWindow import SettingsWindow
 from Gui.mainWindow import MainWindow
 from Gui.addItemWindow import AddItemWindow
 from Gui.customerSelectionWindow import CustomerSelectionWindow
 from Gui.editCustomerWindow import EditCustomerWindow
-from Gui.editProjectWindow import EditProjectWindow
+from Gui.customerProjectSelectionWindow import CustomerProjectSelectionWindow
 from Gui.newCustomerWindow import NewCustomerWindow
 from Gui.newPojectWindow import NewProjectWindow
 from Gui.windowSetup import (
@@ -14,8 +15,10 @@ from Gui.windowSetup import (
     edit_customer_window_setup,
     settings_window_setup,
     new_project_window_setup,
-    edit_project_window_setup,
-    edit_project_name_window_setup
+    customer_project_selection_window_setup,
+    edit_project_name_window_setup,
+    add_item_window_setup,
+    item_details_window_setup
 )
 from controllers.databaseManager import DatabaseManager
 from models import Customer, UserSettings, Project
@@ -49,20 +52,52 @@ class GuiController:
         return None
 
     def new_project(self):
-        NewProjectWindow(self.main_window, self, new_project_window_setup)
+        new_project_window = NewProjectWindow(self.main_window, self, new_project_window_setup)
+        new_project_window.grab_set()
 
     # TODO
     def edit_project(self) -> None:
-        edit_project_window = EditProjectWindow(self.main_window, self, edit_project_window_setup)
-        edit_project_window.grab_set()
+        customer_project_selection_window = CustomerProjectSelectionWindow(
+            self.main_window,
+            self,
+            customer_project_selection_window_setup,
+            self.edit_project_name
+        )
+
+        customer_project_selection_window.grab_set()
 
     def edit_project_name(self, customer: Customer, project: Project) -> None:
         EditProjectNameWindow(self.main_window, self, edit_project_name_window_setup, customer, project)
 
-    # TODO
     def add_item(self):
-        add_item_window = AddItemWindow(self)
+        add_item_window = AddItemWindow(self.main_window, self, add_item_window_setup)
         add_item_window.grab_set()
+
+    def open_item_details_window(self, customer=None, project=None, item=None):
+        item_details = ItemDetailsWindow(self.main_window, self, item_details_window_setup, customer, project, item)
+        item_details.grab_set()
+
+    def add_specific_item(self):
+        customer_project_selection_window = CustomerProjectSelectionWindow(
+            self.main_window,
+            self,
+            customer_project_selection_window_setup,
+            self.open_item_details_window
+        )
+
+        customer_project_selection_window.grab_set()
+
+    # def edit_item(self):
+    #     edit_project_window = CustomerProjectSelectionWindow(
+    #         self.main_window,
+    #         self,
+    #         customer_project_selection_window_setup,
+    #         self.open_item_details_window()
+    #     )
+    #
+    #     edit_project_window.grab_set()
+
+
 
     # TODO
     def edit_item(self):
@@ -112,6 +147,15 @@ class GuiController:
 
     def update_project(self, original_project: Project, project_data: dict) -> None:
         self.db_manager.update_project(original_project, project_data)
+
+    def get_item_price(self, item_id: int) -> int:
+        self.db_manager.get_item_price(item_id)
+
+    def save_item_with_price(self, item_data: dict, price_data: dict) -> None:
+        self.db_manager.save_item_with_price(item_data, price_data)
+
+
+
 
     def get_user_settings(self) -> UserSettings | None:
         return self.db_manager.get_user_settings()
