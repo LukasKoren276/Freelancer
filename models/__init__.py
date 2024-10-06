@@ -8,4 +8,3 @@ from .item import Item
 from .item_time import ItemTime
 from .invoice import Invoice
 from .user_settings import UserSettings
-from .price import Price

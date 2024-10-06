@@ -1,5 +1,4 @@
-
-from tkinter import messagebox
+from CTkMessagebox import CTkMessagebox
 from sqlalchemy import inspect, Integer, String, DateTime
 from datetime import datetime
 
@@ -63,34 +62,43 @@ class DataValidation:
                 new_value = DataValidation.validate_integer(value, is_nullable)
 
                 if new_value == 0:
-                    messagebox.showwarning(
-                        'Invalid Input',
-                        f'{field_name.replace("_", " ").title()} must be a valid positive integer.'
+                    CTkMessagebox(
+                        title='Invalid Input',
+                        message=f'{field_name.replace("_", " ").title()} must be a valid positive integer.',
+                        icon="cancel",
+                        option_1='OK'
                     )
                     return
 
             elif isinstance(column.type, String):
                 new_value = DataValidation.validate_string(value, is_nullable)
                 if new_value == '':
-                    messagebox.showwarning(
-                        'Invalid Input',
-                        f'{field_name.replace("_", " ").title()} must be a non-empty string.'
+                    CTkMessagebox(
+                        title='Invalid Input',
+                        message=f'{field_name.replace("_", " ").title()} must be a non-empty string.',
+                        icon="cancel",
+                        option_1='OK'
                     )
                     return
 
             elif isinstance(column.type, DateTime):
                 new_value = DataValidation.validate_datetime(value, is_nullable)
                 if new_value == '':
-                    messagebox.showwarning(
-                        'Invalid Input',
-                        f'Date must be in one of the accepted formats: {", ".join(DataValidation.date_formats)}.'
+                    CTkMessagebox(
+                        title='Invalid Input',
+                        message=f'Date must be in one of the accepted formats: '
+                                f'{", ".join(DataValidation.date_formats)}.',
+                        icon="cancel",
+                        option_1='OK'
                     )
                     return
 
             else:
-                messagebox.showwarning(
-                    'Invalid Data Format',
-                    'Data Format not recognized.'
+                CTkMessagebox(
+                    title='Invalid Data Format',
+                    message='Data Format not recognized.',
+                    icon="cancel",
+                    option_1='OK'
                 )
                 return
 

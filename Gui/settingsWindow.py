@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from Gui.windowDetails import WindowDetails
+from Gui.setup.windowDetails import WindowDetails
 from models import UserSettings
-from Gui.dataValidation import DataValidation
+from helpers.dataValidation import DataValidation
 
 
 class SettingsWindow(tk.Toplevel):

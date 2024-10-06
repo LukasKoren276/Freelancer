@@ -1,21 +1,22 @@
-from math import floor
-import tkinter as tk
+import customtkinter as ctk
 
-from .windowDetails import WindowDetails
+from Gui.setup.windowDetails import WindowDetails
 
 
-class MainWindow(tk.Tk):
-    width = 800
-    height = 600
+class MainWindow(ctk.CTk):
 
     def __init__(self, controller, window_details: WindowDetails):
         super().__init__()
         self.controller = controller
-        self.title(window_details.title)
-        self.geometry(window_details.geometry)
-        self.resizable(*window_details.resizable)
-        self.label = tk.Label(self, text='Welcome to the Invoicer Application!')
-        self.label.grid(row=0, column=0, padx=10, pady=10)
+        self.window_details = window_details
+        self.title(self.window_details.title)
+        self.resizable(*self.window_details.resizable)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=0)
+        self.grid_columnconfigure(2, weight=0)
+        self.grid_columnconfigure(3, weight=1)
+        self.grid_rowconfigure(0, minsize=20)
+
         self.center_window()
 
         self.button_definitions = {
@@ -23,8 +24,8 @@ class MainWindow(tk.Tk):
             'Edit Customer': self.controller.edit_customer,
             'New Project': self.controller.new_project,
             'Edit Project': self.controller.edit_project,
-            'Add Item': self.controller.add_item,
-            'Edit Item': self.controller.edit_item,
+            'Add General Item': self.controller.new_general_item,
+            'Edit General Item': self.controller.edit_general_item,
             'Log Time': self.controller.log_time,
             'Create Offer': self.controller.create_offer,
             'Create Invoice': self.controller.create_invoice,
@@ -36,11 +37,16 @@ class MainWindow(tk.Tk):
     def center_window(self):
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        position_right = int(screen_width / 2 - self.width / 2)
-        position_down = int(screen_height / 2 - self.height / 2)
-        self.geometry(f"{self.width}x{self.height}+{position_right}+{position_down}")
+        position_right = int(screen_width / 2 - self.window_details.width / 2)
+        position_down = int(screen_height / 2 - self.window_details.height / 2)
+        self.geometry(f"{self.window_details.width}x{self.window_details.height}+{position_right}+{position_down}")
 
     def create_window_objects(self):
+        button_font = ctk.CTkFont(family="Helvetica", size=15)
+
         for index, (button_name, action) in enumerate(self.button_definitions.items()):
-            button = tk.Button(self, text=button_name, command=action, width=15, height=2)
-            button.grid(row=floor((index + 2)/2), column=index % 2, padx=10, pady=10)
+            row = (index // 2) + 1
+            column = (index % 2) + 1
+            ctk.CTkButton(
+                self, text=button_name, font=button_font, command=action
+            ).grid(row=row, column=column, padx=30, pady=20, sticky='ew')
