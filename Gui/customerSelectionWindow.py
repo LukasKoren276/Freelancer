@@ -47,8 +47,8 @@ class CustomerSelectionWindow(ctk.CTkToplevel):
         )
 
         style = ttk.Style()
-        style.configure("Treeview.Heading", font=('Helvetica', 17, 'bold'))
-        style.configure("Treeview", rowheight=25, font=('Helvetica', 15),)
+        style.configure("Treeview.Heading", font=('Helvetica', 13, 'bold'))
+        style.configure("Treeview", rowheight=25, font=('Helvetica', 10),)
 
         for key, value in self.columns.items():
             self.customer_list.heading(key, text=value, anchor=tk.W)

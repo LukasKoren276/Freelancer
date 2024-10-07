@@ -1,7 +1,6 @@
 import customtkinter as ctk
 
 from Gui.generalItemWindow import GeneralItemWindow
-from Gui.projectItemWindow import ProjectItemWindow
 from controllers.databaseManager import DatabaseManager
 from Gui.mainWindow import MainWindow
 from Gui.settingsWindow import SettingsWindow
@@ -15,7 +14,6 @@ from Gui.setup.windowSetup import (
     settings_window_setup,
     project_window_setup,
     general_item_window_setup,
-    project_item_window_setup,
 )
 from models import Customer, UserSettings, Project, Item
 
@@ -60,42 +58,6 @@ class GuiController:
     def edit_general_item(self) -> None:
         project_window = GeneralItemWindow(self.main_window, self, general_item_window_setup, edit=True)
         project_window.grab_set()
-
-
-
-
-    #
-    # def add_item(self):
-    #     add_item_window = AddItemWindow(self.main_window, self, add_item_window_setup)
-    #     add_item_window.grab_set()
-    #
-    # def open_item_details_window(self, customer=None, project=None, item=None):
-    #     item_details = ItemDetailsWindow(self.main_window, self, item_details_window_setup, customer, project, item)
-    #     item_details.grab_set()
-    #
-    # def add_specific_item(self):
-    #     customer_project_selection_window = CustomerProjectSelectionWindow(
-    #         self.main_window,
-    #         self,
-    #         customer_project_selection_window_setup,
-    #         self.open_item_details_window
-    #     )
-    #
-    #     customer_project_selection_window.grab_set()
-
-    # def edit_item(self):
-    #     edit_project_window = CustomerProjectSelectionWindow(
-    #         self.main_window,
-    #         self,
-    #         customer_project_selection_window_setup,
-    #         self.open_item_details_window()
-    #     )
-    #
-    #     edit_project_window.grab_set()
-
-    # TODO
-    def edit_item(self):
-        pass
 
     # TODO
     def log_time(self):

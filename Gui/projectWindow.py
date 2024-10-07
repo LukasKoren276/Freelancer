@@ -3,7 +3,7 @@ import customtkinter as ctk
 from helpers.dataValidation import DataValidation
 from helpers.message import Message
 from Gui.setup.windowDetails import WindowDetails
-from models import Project, Customer
+from models import Project
 
 
 class ProjectWindow(ctk.CTkToplevel):
@@ -21,6 +21,7 @@ class ProjectWindow(ctk.CTkToplevel):
         self.grid_rowconfigure(0, minsize=50)
         self.customers = self.controller.get_customers()
         self.customer_map = {}
+        self.selected_customer = None
 
         self.fields = {
             'project_name': (ctk.StringVar(), 'Project Name')
@@ -74,24 +75,28 @@ class ProjectWindow(ctk.CTkToplevel):
             self.customer_map[customer_name] = customer
 
     def on_customer_select(self, event=None):
+        self.set_selected_customer()
         if self.edit:
-            self.load_projects_for_selected_customer(self.get_selected_customer())
+            self.load_projects_for_selected_customer()
 
-    def get_selected_customer(self) -> Customer | None:
+    def set_selected_customer(self) -> None:
         selected_customer_name = self.customer_combobox.get()
-        return self.customer_map[selected_customer_name]
+        self.selected_customer = self.customer_map[selected_customer_name]
 
-    def load_projects_for_selected_customer(self, customer):
-        project_names = [project.project_name for project in customer.projects]
-        self.project_combobox.configure(values=project_names)
+    def load_projects_for_selected_customer(self):
+        project_names = [project.project_name for project in self.selected_customer.projects]
 
-        if project_names:
+        if not project_names:
+            self.project_combobox.configure(values=[])
+            self.project_combobox.set('')
+        else:
+            self.project_combobox.configure(values=project_names)
             self.project_combobox.set(project_names[0])
 
-    def get_selected_project(self, selected_customer: Customer) -> Project | None:
+    def get_selected_project(self) -> Project | None:
         selected_project_name = self.project_combobox.get()
 
-        for project in selected_customer.projects:
+        for project in self.selected_customer.projects:
             if project.project_name == selected_project_name:
                 return project
 
@@ -103,14 +108,12 @@ class ProjectWindow(ctk.CTkToplevel):
         if validated_data is None:
             return
 
-        selected_customer = self.get_selected_customer()
-
-        if not selected_customer:
+        if not self.selected_customer:
             Message.common_one_buttton_msg('fail', 'Invalid Input', 'Please select a customer.')
             return
 
         if self.edit:
-            project = self.get_selected_project(selected_customer)
+            project = self.get_selected_project()
 
             if not project:
                 Message.common_one_buttton_msg('fail', 'Invalid Input', 'Please select a  project.')
@@ -119,7 +122,7 @@ class ProjectWindow(ctk.CTkToplevel):
             result = self.controller.update_project(project, validated_data)
 
         else:
-            validated_data.update({'customer_id': selected_customer.customer_id})
+            validated_data.update({'customer_id': self.selected_customer.customer_id})
             result = self.controller.save_project(validated_data)
 
         Message.show_db_result(result, 'Project', None)

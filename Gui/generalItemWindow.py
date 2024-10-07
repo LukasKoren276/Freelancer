@@ -11,25 +11,26 @@ class GeneralItemWindow(ctk.CTkToplevel):
     def __init__(self, parent: ctk.CTk, controller, window_details: WindowDetails, edit: bool = False):
         super().__init__(parent)
         self.controller = controller
+        self.window_details = window_details
         self.edit = edit
-        self.title(window_details.title if not self.edit else 'Edit General Item')
-        self.geometry(window_details.geometry)
-        self.resizable(*window_details.resizable)
+        self.title(self.window_details.title if not self.edit else 'Edit General Item')
+        self.geometry(self.window_details.geometry)
+        self.resizable(*self.window_details.resizable)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
         self.grid_rowconfigure(0, minsize=50)
+        self.general_items = None
+        self.selected_item = None
+        self.entries = []
 
         self.fields = {
             'item_name': (ctk.StringVar(), 'Item Name'),
             'item_note': (ctk.StringVar(), 'Item Note'),
             'item_price_per_unit': (ctk.StringVar(), 'Price per Unit'),
-            'price_unit': (ctk.StringVar(), 'Unit')
+            'price_unit': (ctk.StringVar(), 'Price Unit')
         }
 
-        self.items = None
-        self.selected_item = None
-        self.entries = []
         self.create_window_objects()
 
     def create_window_objects(self):
@@ -38,14 +39,25 @@ class GeneralItemWindow(ctk.CTkToplevel):
             self.general_item_combobox = ctk.CTkComboBox(self, state="readonly", width=300, command=self.on_item_select)
             self.general_item_combobox.grid(row=1, column=1, padx=0, pady=(0, 15), sticky='NW')
 
+        last_key = list(self.fields)[-1]
         for index, (name, (var, label_text)) in enumerate(self.fields.items()):
             ctk.CTkLabel(
                 self, text=label_text
             ).grid(row=2 * index + 2, column=1, padx=0, pady=0, sticky='SW')
 
-            entry = ctk.CTkEntry(self, textvariable=var, width=300, state='disabled' if self.edit else 'normal')
-            entry.grid(row=2 * index + 3, column=1, padx=0, pady=(0, 15), sticky='NW')
-            self.entries.append(entry)
+            if name != last_key:
+                entry = ctk.CTkEntry(self, textvariable=var, width=300, state='disabled' if self.edit else 'normal')
+                entry.grid(row=2 * index + 3, column=1, padx=0, pady=(0, 15), sticky='NW')
+                self.entries.append(entry)
+            else:
+                self.price_unit_combobox = ctk.CTkComboBox(
+                    self,
+                    state='disabled' if self.edit else 'normal',
+                    width=300,
+                    command=self.on_price_unit_select
+
+                )
+                self.price_unit_combobox.grid(row=2 * index + 3, column=1, padx=0, pady=(0, 15), sticky='NW')
 
         ctk.CTkButton(
             self,
@@ -54,12 +66,19 @@ class GeneralItemWindow(ctk.CTkToplevel):
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=2 * len(self.fields) + 3, column=1, pady=40)
 
+        self.load_combo_price_units()
         self.load_combo_general_items()
+
+    def load_combo_price_units(self) -> None:
+        price_units = list(self.window_details.price_units().keys())
+        self.price_unit_combobox.configure(values=price_units)
+        self.price_unit_combobox.set(price_units[0])
+        self.fields['price_unit'][0].set(price_units[0])
 
     def load_combo_general_items(self) -> None:
         if self.edit:
-            self.items = self.controller.get_general_items()
-            item_values = [item.item_name for item in self.items]
+            self.general_items = self.controller.get_general_items()
+            item_values = [item.item_name for item in self.general_items]
             self.general_item_combobox.configure(values=item_values)
 
             if item_values:
@@ -71,11 +90,19 @@ class GeneralItemWindow(ctk.CTkToplevel):
         for key, (var, name) in self.fields.items():
             var.set(getattr(self.selected_item, key))
 
+        self.price_unit_combobox.configure(state='normal')
+        self.price_unit_combobox.set(self.selected_item.price_unit)
+        self.price_unit_combobox.configure(state='disabled')
+
         for entry in self.entries:
             entry.configure(state="normal")
 
+    def on_price_unit_select(self, event=None):
+        value = self.price_unit_combobox.get()
+        self.fields['price_unit'][0].set(value)
+
     def get_selected_item(self) -> Item | None:
-        for item in self.items:
+        for item in self.general_items:
             if item.item_name == self.general_item_combobox.get():
                 return item
 

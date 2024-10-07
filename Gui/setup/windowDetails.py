@@ -12,3 +12,10 @@ class WindowDetails:
     @property
     def resizable(self):
         return self.resize, self.resize
+
+    def price_units(self) -> dict:
+        return {
+            'piece': 'pcs',
+            'hour': 'hrs',
+            'kilometer': 'km'
+        }

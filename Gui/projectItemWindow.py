@@ -6,7 +6,8 @@ from helpers.message import Message
 from Gui.setup.windowDetails import WindowDetails
 from models import Project, Customer, Item
 
-# TODO - DO NOT DELETE, only finish the logic
+
+# TODO - DO NOT DELETE, only finish the logic and simplify
 class ProjectItemWindow(ctk.CTkToplevel):
 
     def __init__(self, parent,  controller, window_details: WindowDetails, edit: bool = False):
