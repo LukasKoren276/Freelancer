@@ -49,3 +49,6 @@ class DatabaseManager:
 
     def get_general_items(self) -> list | None:
         return self.session.query(Item).filter(Item.project_id.is_(None)).all()
+
+    def get_items_by_project_or_general(self, project_id: int) -> list | None:
+        return self.session.query(Item).filter(or_(Item.project_id.is_(None), Item.project_id == project_id)).all()

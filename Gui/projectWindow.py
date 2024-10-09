@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from helpers.constants import Constants as const
 from helpers.dataValidation import DataValidation
 from helpers.message import Message
 from Gui.setup.windowDetails import WindowDetails
@@ -8,11 +9,11 @@ from models import Project
 
 class ProjectWindow(ctk.CTkToplevel):
 
-    def __init__(self, parent,  controller, window_details: WindowDetails, edit: bool = False):
+    def __init__(self, parent, controller, window_details: WindowDetails, operation: str):
         super().__init__(parent)
         self.controller = controller
-        self.edit = edit
-        self.title(window_details.title if not self.edit else 'Edit Project')
+        self.operation = operation
+        self.title(window_details.get_title('Project', self.operation))
         self.geometry(window_details.geometry)
         self.resizable(*window_details.resizable)
         self.grid_columnconfigure(0, weight=1)
@@ -29,18 +30,18 @@ class ProjectWindow(ctk.CTkToplevel):
 
         self.create_window_objects()
 
-    def create_window_objects(self):
+    def create_window_objects(self) -> None:
         ctk.CTkLabel(self, text='Customer').grid(row=0, column=1, padx=0, pady=0, sticky='SW')
         self.customer_combobox = ctk.CTkComboBox(self, state="readonly", width=500, command=self.on_customer_select)
         self.customer_combobox.grid(row=1, column=1, padx=0, pady=(0, 15), sticky='NW')
 
-        if self.edit:
+        if self.operation == const.op_edit:
             ctk.CTkLabel(self, text='Project').grid(row=2, column=1, padx=0, pady=0, sticky='SW')
             self.project_combobox = ctk.CTkComboBox(self, state="readonly", width=500)
             self.project_combobox.grid(row=3, column=1, padx=0, pady=(0, 15), sticky='NW')
 
         ctk.CTkLabel(
-            self, text='New Project Name' if self.edit else 'Project Name'
+            self, text='New Project Name' if self.operation == const.op_edit else 'Project Name'
         ).grid(row=4, column=1, padx=0, pady=0, sticky='SW')
 
         ctk.CTkEntry(
@@ -49,14 +50,14 @@ class ProjectWindow(ctk.CTkToplevel):
 
         ctk.CTkButton(
             self,
-            text='Save Project and Close' if not self.edit else 'Update Project',
+            text='Save Project and Close' if self.operation == const.op_add else 'Update Project',
             command=self.submit,
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=6, column=1, pady=40)
 
         self.load_combo_customers()
 
-    def load_combo_customers(self):
+    def load_combo_customers(self) -> None:
         self.create_customer_map()
         customer_names = list(self.customer_map.keys())
         self.customer_combobox.configure(values=customer_names)
@@ -65,7 +66,7 @@ class ProjectWindow(ctk.CTkToplevel):
             self.customer_combobox.set(customer_names[0])
             self.on_customer_select()
 
-    def create_customer_map(self):
+    def create_customer_map(self) -> None:
         for customer in self.customers:
             customer_name = (
                 f'{customer.company_name + ", " if customer.company_name is not None else ""} '
@@ -74,9 +75,9 @@ class ProjectWindow(ctk.CTkToplevel):
             )
             self.customer_map[customer_name] = customer
 
-    def on_customer_select(self, event=None):
+    def on_customer_select(self, event=None) -> None:
         self.set_selected_customer()
-        if self.edit:
+        if self.operation == const.op_edit:
             self.load_projects_for_selected_customer()
 
     def set_selected_customer(self) -> None:
@@ -102,7 +103,7 @@ class ProjectWindow(ctk.CTkToplevel):
 
         return None
 
-    def submit(self):
+    def submit(self) -> None:
         validated_data = DataValidation.validate_data(Project, self.fields)
 
         if validated_data is None:
@@ -112,7 +113,7 @@ class ProjectWindow(ctk.CTkToplevel):
             Message.common_one_buttton_msg('fail', 'Invalid Input', 'Please select a customer.')
             return
 
-        if self.edit:
+        if self.operation == const.op_edit:
             project = self.get_selected_project()
 
             if not project:

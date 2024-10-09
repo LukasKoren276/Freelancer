@@ -34,7 +34,7 @@ class CustomerSelectionWindow(ctk.CTkToplevel):
         self.grid_columnconfigure(0, weight=1)
         self.create_customer_list()
 
-    def create_customer_list(self):
+    def create_customer_list(self) -> None:
         self.list_frame = ctk.CTkFrame(self)
         self.list_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
         self.list_frame.grid_rowconfigure(0, weight=1)
@@ -72,14 +72,14 @@ class CustomerSelectionWindow(ctk.CTkToplevel):
         self.load_customers()
         self.autosize_columns()
 
-    def autosize_columns(self):
+    def autosize_columns(self) -> None:
         for col in self.customer_list['columns']:
             self.customer_list.column(col, width=ctk.CTkFont().measure(self.customer_list.heading(col)['text']))
             for row in self.customer_list.get_children(''):
                 item_width = ctk.CTkFont().measure(self.customer_list.set(row, col))
                 self.customer_list.column(col, width=max(self.customer_list.column(col, 'width'), item_width))
 
-    def load_customers(self):
+    def load_customers(self) -> None:
         for i in self.customer_list.get_children():
             self.customer_list.delete(i)
 
@@ -106,7 +106,7 @@ class CustomerSelectionWindow(ctk.CTkToplevel):
 
         self.customer_list.tag_configure('evenrow', background='#d3d3d3')
 
-    def select_customer_on_double_click(self, event=None):
+    def select_customer_on_double_click(self, event=None) -> None:
         selected_item = self.customer_list.focus()
 
         if not selected_item:
@@ -122,5 +122,5 @@ class CustomerSelectionWindow(ctk.CTkToplevel):
             self.customer_values = self.customer_list.item(selected_item, 'values')
             self.destroy()
 
-    def get_customer_values(self):
+    def get_customer_values(self) -> tuple:
         return self.customer_values

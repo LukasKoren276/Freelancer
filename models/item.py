@@ -15,6 +15,7 @@ class Item(Base):
 
     project = relationship('Project', back_populates='items')
     times = relationship('ItemTime', order_by='ItemTime.item_time_id', back_populates='item')
+    invoices = relationship('Invoice', back_populates='item')
 
     def __repr__(self):
         return (f"<Item(id={self.item_id}, project_id={self.project_id}, item_name={self.item_name}'"

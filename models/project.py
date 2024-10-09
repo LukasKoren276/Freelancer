@@ -12,7 +12,6 @@ class Project(Base):
 
     customer = relationship('Customer', back_populates='projects')
     items = relationship('Item', order_by='Item.item_id', back_populates='project')
-    invoices = relationship('Invoice', back_populates='project', uselist=False)
 
     def __repr__(self):
         return f"<Project(id={self.project_id}, project name={self.project_name} customer_id={self.customer_id})>"

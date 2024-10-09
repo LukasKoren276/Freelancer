@@ -24,8 +24,8 @@ class MainWindow(ctk.CTk):
             'Edit Customer': self.controller.edit_customer,
             'New Project': self.controller.new_project,
             'Edit Project': self.controller.edit_project,
-            'Add General Item': self.controller.new_general_item,
-            'Edit General Item': self.controller.edit_general_item,
+            'New Item': self.controller.new_item,
+            'Edit Item': self.controller.edit_item,
             'Log Time': self.controller.log_time,
             'Create Offer': self.controller.create_offer,
             'Create Invoice': self.controller.create_invoice,
@@ -34,14 +34,14 @@ class MainWindow(ctk.CTk):
 
         self.create_window_objects()
 
-    def center_window(self):
+    def center_window(self) -> None:
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         position_right = int(screen_width / 2 - self.window_details.width / 2)
         position_down = int(screen_height / 2 - self.window_details.height / 2)
         self.geometry(f"{self.window_details.width}x{self.window_details.height}+{position_right}+{position_down}")
 
-    def create_window_objects(self):
+    def create_window_objects(self) -> None:
         button_font = ctk.CTkFont(family="Helvetica", size=15)
 
         for index, (button_name, action) in enumerate(self.button_definitions.items()):

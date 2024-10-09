@@ -7,7 +7,7 @@ from controllers.guiController import GuiController
 from controllers.databaseManager import DatabaseManager
 
 
-def initialize_db():
+def initialize_db() -> None:
     if not os.path.exists(db_folder):
         os.makedirs(db_folder)
 
@@ -17,7 +17,7 @@ def initialize_db():
         print(f"Database initialized and tables created at: {db_file}")
 
 
-def start_application():
+def start_application() -> None:
     try:
         initialize_db()
     except Exception as err:

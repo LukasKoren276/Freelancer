@@ -1,6 +1,8 @@
 import customtkinter as ctk
 
 from Gui.generalItemWindow import GeneralItemWindow
+from Gui.itemKindSelectionWindow import ItemKindSelectionWindow
+from Gui.specificItemWindow import SpecificItemWindow
 from controllers.databaseManager import DatabaseManager
 from Gui.mainWindow import MainWindow
 from Gui.settingsWindow import SettingsWindow
@@ -13,12 +15,14 @@ from Gui.setup.windowSetup import (
     customer_selection_window_setup,
     settings_window_setup,
     project_window_setup,
-    general_item_window_setup,
+    item_window_setup, item_selection_window_setup,
 )
+from helpers.constants import Constants as const
 from models import Customer, UserSettings, Project, Item
 
 
 class GuiController:
+
     def __init__(self, db_manager: DatabaseManager) -> None:
         self.db_manager = db_manager
         self.main_window = None
@@ -34,7 +38,12 @@ class GuiController:
         customer_window.grab_set()
 
     def edit_customer(self) -> None:
-        customer_selection_window = CustomerSelectionWindow(self.main_window, self, customer_selection_window_setup)
+        customer_selection_window = CustomerSelectionWindow(
+            self.main_window,
+            self,
+            customer_selection_window_setup
+        )
+
         customer_selection_window.grab_set()
         self.main_window.wait_window(customer_selection_window)
         customer = self.get_customer(customer_selection_window.get_customer_values())
@@ -44,20 +53,57 @@ class GuiController:
             customer_window.grab_set()
 
     def new_project(self) -> None:
-        project_window = ProjectWindow(self.main_window, self, project_window_setup, edit=False)
+        project_window = ProjectWindow(
+            self.main_window,
+            self, project_window_setup,
+            operation=const.op_add
+        )
+
         project_window.grab_set()
 
     def edit_project(self) -> None:
-        project_window = ProjectWindow(self.main_window, self, project_window_setup, edit=True)
+        project_window = ProjectWindow(
+            self.main_window,
+            self,
+            project_window_setup,
+            operation=const.op_edit
+        )
+
         project_window.grab_set()
 
-    def new_general_item(self) -> None:
-        project_window = GeneralItemWindow(self.main_window, self, general_item_window_setup, edit=False)
-        project_window.grab_set()
+    def new_item(self):
+        item_kind_window = ItemKindSelectionWindow(
+            self.main_window,
+            self,
+            item_selection_window_setup,
+            operation=const.op_add
+        )
 
-    def edit_general_item(self) -> None:
-        project_window = GeneralItemWindow(self.main_window, self, general_item_window_setup, edit=True)
-        project_window.grab_set()
+        item_kind_window.grab_set()
+        self.main_window.wait_window(item_kind_window)
+        method = item_kind_window.get_selected_method()
+        method(const.op_add)
+
+    def edit_item(self):
+        item_kind_window = ItemKindSelectionWindow(
+            self.main_window,
+            self,
+            item_selection_window_setup,
+            operation=const.op_edit
+        )
+
+        item_kind_window.grab_set()
+        self.main_window.wait_window(item_kind_window)
+        method = item_kind_window.get_selected_method()
+        method(const.op_edit)
+
+    def general_item(self, operation: str) -> None:
+        item_window = GeneralItemWindow(self.main_window, self, item_window_setup, operation)
+        item_window.grab_set()
+
+    def specific_item(self, operation: str):
+        item_window = SpecificItemWindow(self.main_window, self, item_window_setup, operation)
+        item_window.grab_set()
 
     # TODO
     def log_time(self):
@@ -106,6 +152,9 @@ class GuiController:
 
     def get_general_items(self) -> list | None:
         return self.db_manager.get_general_items()
+
+    def get_items_by_project_or_general(self, project_id: int) -> list | None:
+        return self.db_manager.get_items_by_project_or_general(project_id)
 
     def save_item(self, item_data: dict) -> bool:
         return self.db_manager.save_entity(Item, item_data)

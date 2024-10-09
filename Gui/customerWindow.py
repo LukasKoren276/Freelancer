@@ -57,7 +57,7 @@ class CustomerWindow(ctk.CTkToplevel):
 
         self.create_window_objects()
 
-    def create_window_objects(self):
+    def create_window_objects(self) -> None:
         for index, (name, (var, label_text)) in enumerate(self.fields.items()):
             ctk.CTkLabel(
                 self, text=label_text
@@ -74,7 +74,7 @@ class CustomerWindow(ctk.CTkToplevel):
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=2 * len(self.fields) + 1, column=1, pady=40)
 
-    def submit(self):
+    def submit(self) -> None:
         validated_data = DataValidation.validate_data(Customer, self.fields)
 
         if validated_data is None:

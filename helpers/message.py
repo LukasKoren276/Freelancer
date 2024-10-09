@@ -21,7 +21,7 @@ class Message:
         return ' '.join(re.findall(r'[A-Z][a-z]*', string))
 
     @staticmethod
-    def __prepare_db_message(result: bool, entity_name: str, instance: Base):
+    def __prepare_db_message(result: bool, entity_name: str, instance: Base) -> dict:
         title = 'Success' if result else 'Error'
         action = 'save' if instance is None else 'update'
 

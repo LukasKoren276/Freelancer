@@ -1,5 +1,6 @@
 import customtkinter as ctk
 
+from helpers.constants import Constants as const
 from helpers.dataValidation import DataValidation
 from helpers.message import Message
 from Gui.setup.windowDetails import WindowDetails
@@ -8,12 +9,12 @@ from models import Item
 
 class GeneralItemWindow(ctk.CTkToplevel):
 
-    def __init__(self, parent: ctk.CTk, controller, window_details: WindowDetails, edit: bool = False):
+    def __init__(self, parent: ctk.CTk, controller, window_details: WindowDetails, operation: str):
         super().__init__(parent)
         self.controller = controller
         self.window_details = window_details
-        self.edit = edit
-        self.title(self.window_details.title if not self.edit else 'Edit General Item')
+        self.operation = operation
+        self.title(window_details.get_title('General Item', self.operation))
         self.geometry(self.window_details.geometry)
         self.resizable(*self.window_details.resizable)
         self.grid_columnconfigure(0, weight=1)
@@ -33,8 +34,8 @@ class GeneralItemWindow(ctk.CTkToplevel):
 
         self.create_window_objects()
 
-    def create_window_objects(self):
-        if self.edit:
+    def create_window_objects(self) -> None:
+        if self.operation == const.op_edit:
             ctk.CTkLabel(self, text='Select Item to Edit').grid(row=0, column=1, padx=0, pady=0, sticky='SW')
             self.general_item_combobox = ctk.CTkComboBox(self, state="readonly", width=300, command=self.on_item_select)
             self.general_item_combobox.grid(row=1, column=1, padx=0, pady=(0, 15), sticky='NW')
@@ -46,22 +47,26 @@ class GeneralItemWindow(ctk.CTkToplevel):
             ).grid(row=2 * index + 2, column=1, padx=0, pady=0, sticky='SW')
 
             if name != last_key:
-                entry = ctk.CTkEntry(self, textvariable=var, width=300, state='disabled' if self.edit else 'normal')
+                entry = ctk.CTkEntry(
+                    self,
+                    textvariable=var,
+                    width=300,
+                    state='disabled' if self.operation == const.op_edit else 'normal'
+                )
                 entry.grid(row=2 * index + 3, column=1, padx=0, pady=(0, 15), sticky='NW')
                 self.entries.append(entry)
             else:
                 self.price_unit_combobox = ctk.CTkComboBox(
                     self,
-                    state='disabled' if self.edit else 'normal',
+                    state='disabled' if self.operation == const.op_edit else 'readonly',
                     width=300,
                     command=self.on_price_unit_select
-
                 )
                 self.price_unit_combobox.grid(row=2 * index + 3, column=1, padx=0, pady=(0, 15), sticky='NW')
 
         ctk.CTkButton(
             self,
-            text='Save Item and Close' if not self.edit else 'Update Item',
+            text='Save Item and Close' if self.operation == const.op_add else 'Update Item',
             command=self.submit,
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=2 * len(self.fields) + 3, column=1, pady=40)
@@ -76,7 +81,7 @@ class GeneralItemWindow(ctk.CTkToplevel):
         self.fields['price_unit'][0].set(price_units[0])
 
     def load_combo_general_items(self) -> None:
-        if self.edit:
+        if self.operation == const.op_edit:
             self.general_items = self.controller.get_general_items()
             item_values = [item.item_name for item in self.general_items]
             self.general_item_combobox.configure(values=item_values)
@@ -86,9 +91,10 @@ class GeneralItemWindow(ctk.CTkToplevel):
 
     def on_item_select(self, event=None) -> None:
         self.selected_item = self.get_selected_item()
-
-        for key, (var, name) in self.fields.items():
-            var.set(getattr(self.selected_item, key))
+        if self.selected_item is not None:
+            for key, (var, name) in self.fields.items():
+                value = getattr(self.selected_item, key)
+                var.set(value if value is not None else '')
 
         self.price_unit_combobox.configure(state='normal')
         self.price_unit_combobox.set(self.selected_item.price_unit)
@@ -97,7 +103,7 @@ class GeneralItemWindow(ctk.CTkToplevel):
         for entry in self.entries:
             entry.configure(state="normal")
 
-    def on_price_unit_select(self, event=None):
+    def on_price_unit_select(self, event=None) -> None:
         value = self.price_unit_combobox.get()
         self.fields['price_unit'][0].set(value)
 
@@ -108,13 +114,13 @@ class GeneralItemWindow(ctk.CTkToplevel):
 
         return None
 
-    def submit(self):
+    def submit(self) -> None:
         validated_data = DataValidation.validate_data(Item, self.fields)
 
         if validated_data is None:
             return
 
-        if self.edit:
+        if self.operation == const.op_edit:
             result = self.controller.update_item(self.selected_item, validated_data)
         else:
             result = self.controller.save_item(validated_data)
