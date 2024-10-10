@@ -1,24 +1,24 @@
 import customtkinter as ctk
 
+from helpers.constants import Constants as Const
 from helpers.dataValidation import DataValidation
 from helpers.message import Message
-from Gui.setup.windowDetails import WindowDetails
+from helpers.windowHelper import WindowHelper
 from models import Customer
 
 
 class CustomerWindow(ctk.CTkToplevel):
 
-    def __init__(self, parent: ctk.CTk, controller, window_details: WindowDetails, customer: Customer | None = None):
+    def __init__(self, parent: ctk.CTk, entity_name: str, controller, customer: Customer | None = None):
         super().__init__(parent)
+        self.entity_name = entity_name
         self.controller = controller
         self.customer = customer
-        self.title(window_details.title)
-        self.geometry(window_details.geometry)
-        self.resizable(*window_details.resizable)
+        self.title(WindowHelper.get_title(self.entity_name, Const.op_add if self.customer is None else Const.op_edit))
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
-        self.grid_rowconfigure(0, minsize=50)
+        self.grid_rowconfigure(0, minsize=20)
 
         self.fields = {
             'company_name': (
@@ -61,7 +61,7 @@ class CustomerWindow(ctk.CTkToplevel):
         for index, (name, (var, label_text)) in enumerate(self.fields.items()):
             ctk.CTkLabel(
                 self, text=label_text
-            ).grid(row=2 * index, column=1, padx=0, pady=0, sticky='SW')
+            ).grid(row=2 * index, column=1, padx=0, pady=(20 if index == 0 else 0, 0), sticky='SW')
 
             ctk.CTkEntry(
                 self, textvariable=var, width=300
@@ -72,7 +72,9 @@ class CustomerWindow(ctk.CTkToplevel):
             text='Save Customer and Close' if self.customer is None else 'Update Customer',
             command=self.submit,
             font=ctk.CTkFont(family="Helvetica", size=15)
-        ).grid(row=2 * len(self.fields) + 1, column=1, pady=40)
+        ).grid(row=2 * len(self.fields) + 1, column=1, pady=(20, 0))
+
+        WindowHelper.size_and_center(self, resiz=False, center=False)
 
     def submit(self) -> None:
         validated_data = DataValidation.validate_data(Customer, self.fields)
@@ -85,7 +87,7 @@ class CustomerWindow(ctk.CTkToplevel):
         else:
             result = self.controller.update_customer(self.customer, validated_data)
 
-        Message.show_db_result(result, 'Customer', self.customer)
+        Message.show_db_result(result, self.entity_name, self.customer)
 
         self.grab_release()
         self.destroy()

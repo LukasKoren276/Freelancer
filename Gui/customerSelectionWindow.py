@@ -3,17 +3,15 @@ from tkinter import ttk
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
 
-from Gui.setup.windowDetails import WindowDetails
+from helpers.windowHelper import WindowHelper
 
 
 class CustomerSelectionWindow(ctk.CTkToplevel):
 
-    def __init__(self, parent, controller, window_details: WindowDetails):
+    def __init__(self, parent, title, controller):
         super().__init__(parent)
         self.controller = controller
-        self.title(window_details.title)
-        self.geometry(window_details.geometry)
-        self.resizable(*window_details.resizable)
+        self.title(title)
 
         self.columns = {
             'company_name': 'Company Name',
@@ -67,9 +65,10 @@ class CustomerSelectionWindow(ctk.CTkToplevel):
             text='Select a Customer',
             font=ctk.CTkFont(family="Helvetica", size=15),
             command=self.select_customer_on_double_click
-        ).grid(row=1, column=0, padx=10, pady=10)
+        ).grid(row=1, column=0, padx=10, pady=30)
 
         self.load_customers()
+        WindowHelper.size_and_center(self, resiz=True, center=False)
         self.autosize_columns()
 
     def autosize_columns(self) -> None:

@@ -1,22 +1,21 @@
 import customtkinter as ctk
 
-from Gui.setup.windowDetails import WindowDetails
+from helpers.windowHelper import WindowHelper
 
 
 class ItemKindSelectionWindow(ctk.CTkToplevel):
 
-    def __init__(self, parent, controller, window_details: WindowDetails, operation: str):
+    def __init__(self, parent, title, controller, operation: str):
         super().__init__(parent)
         self.parent = parent
         self.controller = controller
         self.operation = operation
-        self.title('Select Item Operation')
-        self.geometry(window_details.geometry)
-        self.resizable(*window_details.resizable)
+        self.title(title)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
-        self.grid_columnconfigure(2, weight=0)
-        self.grid_columnconfigure(3, weight=1)
+        self.grid_columnconfigure(2, weight=0, minsize=50)
+        self.grid_columnconfigure(3, weight=0)
+        self.grid_columnconfigure(4, weight=1)
         self.grid_rowconfigure(0, minsize=50)
         self.selected_method = None
 
@@ -26,21 +25,23 @@ class ItemKindSelectionWindow(ctk.CTkToplevel):
         ctk.CTkLabel(
             self,
             text=f'What kind of item would you like to {self.operation}'
-        ).grid(row=0, column=1, padx=0, pady=0)
+        ).grid(row=0, column=1, padx=0, pady=0, columnspan=3, sticky='w')
 
         ctk.CTkButton(
             self,
             text=f'{self.operation.capitalize()} General Item',
-            command=lambda: self.set_selected_method(self.controller.general_item),
+            command=lambda: self.set_selected_method(self.controller.general_item_window),
             font=ctk.CTkFont(family="Helvetica", size=15)
-        ).grid(row=1, column=1, sticky='W')
+        ).grid(row=1, column=1, sticky='e')
 
         ctk.CTkButton(
             self,
             text=f'{self.operation.capitalize()} Specific Item',
-            command=lambda: self.set_selected_method(self.controller.specific_item),
+            command=lambda: self.set_selected_method(self.controller.specific_item_window),
             font=ctk.CTkFont(family="Helvetica", size=15)
-        ).grid(row=1, column=2, sticky='E')
+        ).grid(row=1, column=3, sticky='e')
+
+        WindowHelper.size_and_center(self, resiz=False, center=False)
 
     def set_selected_method(self, method) -> None:
         self.selected_method = method

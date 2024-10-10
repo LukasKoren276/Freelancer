@@ -1,23 +1,21 @@
 import tkinter as tk
 import customtkinter as ctk
 
-from helpers.constants import Constants as const
+from helpers.constants import Constants as Const
 from helpers.dataValidation import DataValidation
 from helpers.message import Message
-from Gui.setup.windowDetails import WindowDetails
+from helpers.windowHelper import WindowHelper
 from models import Item
 
 
 class SpecificItemWindow(ctk.CTkToplevel):
 
-    def __init__(self, parent, controller, window_details: WindowDetails, operation: str):
+    def __init__(self, parent: ctk.CTk, entity_name: str, controller, operation: str):
         super().__init__(parent)
+        self.entity_name = entity_name
         self.controller = controller
-        self.window_details = window_details
         self.operation = operation
-        self.title(window_details.get_title('Specific Item', self.operation))
-        self.geometry(window_details.geometry)
-        self.resizable(*window_details.resizable)
+        self.title(WindowHelper.get_title(self.entity_name, operation))
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
@@ -56,7 +54,7 @@ class SpecificItemWindow(ctk.CTkToplevel):
         self.project_combobox.grid(row=row, column=1, padx=0, pady=(0, 15), sticky='NW')
         row += 1
 
-        if self.operation == const.op_edit:
+        if self.operation == Const.op_edit:
             ctk.CTkLabel(self, text='Item').grid(row=4, column=1, padx=0, pady=0, sticky='SW')
             row += 1
 
@@ -73,7 +71,7 @@ class SpecificItemWindow(ctk.CTkToplevel):
                 entry = ctk.CTkEntry(
                     self,
                     textvariable=var,
-                    width=500, state='disabled' if self.operation == const.op_edit else 'normal'
+                    width=500, state='disabled' if self.operation == Const.op_edit else 'normal'
                 )
                 entry.grid(row=row, column=1, padx=0, pady=(0, 15), sticky='NW')
                 self.entries.append(entry)
@@ -81,7 +79,7 @@ class SpecificItemWindow(ctk.CTkToplevel):
             else:
                 self.price_unit_combobox = ctk.CTkComboBox(
                     self,
-                    state='disabled' if self.operation == const.op_edit else "readonly",
+                    state='disabled' if self.operation == Const.op_edit else "readonly",
                     width=500,
                     command=self.on_price_unit_select
                 )
@@ -91,11 +89,12 @@ class SpecificItemWindow(ctk.CTkToplevel):
 
         ctk.CTkButton(
             self,
-            text='Save Item and Close' if self.operation == const.op_add else 'Update Item',
+            text='Save Item and Close' if self.operation == Const.op_add else 'Update Item',
             command=self.submit,
             font=ctk.CTkFont(family="Helvetica", size=15)
-        ).grid(row=row, column=1, pady=40)
+        ).grid(row=row, column=1, pady=(20, 0))
 
+        WindowHelper.size_and_center(self, resiz=False, center=False)
         self.load_combo_customers()
         self.load_combo_price_units()
 
@@ -113,7 +112,7 @@ class SpecificItemWindow(ctk.CTkToplevel):
             self.disable_entries()
 
     def load_combo_price_units(self) -> None:
-        price_units = list(self.window_details.price_units().keys())
+        price_units = list(Const.price_units.keys())
         self.price_unit_combobox.configure(values=price_units)
         self.price_unit_combobox.set(price_units[0])
         self.fields['price_unit'][0].set(price_units[0])
@@ -141,7 +140,7 @@ class SpecificItemWindow(ctk.CTkToplevel):
         if self.selected_customer is not None:
             self.load_projects_for_selected_customer()
 
-        if self.operation == const.op_edit:
+        if self.operation == Const.op_edit:
             self.item_combobox.set('')
             self.item_combobox.configure(values=[], state='disabled')
             self.selected_item = None
@@ -167,11 +166,11 @@ class SpecificItemWindow(ctk.CTkToplevel):
     def on_project_select(self, event=None) -> None:
         self.set_selected_project()
 
-        if self.selected_project is not None and self.operation == const.op_edit:
+        if self.selected_project is not None and self.operation == Const.op_edit:
             item_names = [item.item_name for item in self.selected_project.items]
             self.item_combobox.configure(values=item_names)
 
-            if item_names and self.operation == const.op_edit:
+            if item_names and self.operation == Const.op_edit:
                 self.item_combobox.configure(state='normal')
                 self.item_combobox.set(item_names[0])
                 self.on_item_select()
@@ -228,14 +227,14 @@ class SpecificItemWindow(ctk.CTkToplevel):
             return
 
         if self.selected_customer is None or self.selected_project is None:
-            Message.common_one_buttton_msg(
+            Message.common_one_button_msg(
                 'fail', 'Invalid Input', 'Please select a customer and a project.'
             )
             return
 
-        if self.operation == const.op_edit:
+        if self.operation == Const.op_edit:
             if self.selected_item is None:
-                Message.common_one_buttton_msg('fail', 'Invalid Input', 'Please select an item.')
+                Message.common_one_button_msg('fail', 'Invalid Input', 'Please select an item.')
                 return
 
             result = self.controller.update_item(self.selected_item, validated_data)

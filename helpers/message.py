@@ -40,7 +40,7 @@ class Message:
         Message.__show_msgbox(**Message.__prepare_db_message(result, entity_name, instance))
 
     @staticmethod
-    def common_one_buttton_msg(kind, title, message):
+    def common_one_button_msg(kind, title, message):
         if kind not in ['pass', 'fail']:
             raise ValueError("Kind has to be 'pass' or 'fail")
 

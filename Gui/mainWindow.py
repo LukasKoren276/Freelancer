@@ -1,45 +1,34 @@
 import customtkinter as ctk
 
-from Gui.setup.windowDetails import WindowDetails
+from helpers.windowHelper import WindowHelper
 
 
 class MainWindow(ctk.CTk):
 
-    def __init__(self, controller, window_details: WindowDetails):
+    def __init__(self, window_title, controller):
         super().__init__()
+        self.title(window_title)
         self.controller = controller
-        self.window_details = window_details
-        self.title(self.window_details.title)
-        self.resizable(*self.window_details.resizable)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=0)
         self.grid_columnconfigure(3, weight=1)
         self.grid_rowconfigure(0, minsize=20)
 
-        self.center_window()
-
         self.button_definitions = {
-            'New Customer': self.controller.new_customer,
-            'Edit Customer': self.controller.edit_customer,
-            'New Project': self.controller.new_project,
-            'Edit Project': self.controller.edit_project,
-            'New Item': self.controller.new_item,
-            'Edit Item': self.controller.edit_item,
+            'New Customer': self.controller.new_customer_window,
+            'Edit Customer': self.controller.edit_customer_window,
+            'New Project': self.controller.new_project_window,
+            'Edit Project': self.controller.edit_project_window,
+            'New Item': self.controller.new_item_window,
+            'Edit Item': self.controller.edit_item_window,
             'Log Time': self.controller.log_time,
             'Create Offer': self.controller.create_offer,
             'Create Invoice': self.controller.create_invoice,
-            'Settings': self.controller.open_settings
+            'Settings': self.controller.settings_window
         }
 
         self.create_window_objects()
-
-    def center_window(self) -> None:
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        position_right = int(screen_width / 2 - self.window_details.width / 2)
-        position_down = int(screen_height / 2 - self.window_details.height / 2)
-        self.geometry(f"{self.window_details.width}x{self.window_details.height}+{position_right}+{position_down}")
 
     def create_window_objects(self) -> None:
         button_font = ctk.CTkFont(family="Helvetica", size=15)
@@ -50,3 +39,5 @@ class MainWindow(ctk.CTk):
             ctk.CTkButton(
                 self, text=button_name, font=button_font, command=action
             ).grid(row=row, column=column, padx=30, pady=20, sticky='ew')
+
+        WindowHelper.size_and_center(self, resiz=False, center=True)

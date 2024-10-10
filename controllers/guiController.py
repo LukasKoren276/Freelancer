@@ -1,23 +1,15 @@
 import customtkinter as ctk
 
-from Gui.generalItemWindow import GeneralItemWindow
-from Gui.itemKindSelectionWindow import ItemKindSelectionWindow
-from Gui.specificItemWindow import SpecificItemWindow
 from controllers.databaseManager import DatabaseManager
-from Gui.mainWindow import MainWindow
-from Gui.settingsWindow import SettingsWindow
 from Gui.customerSelectionWindow import CustomerSelectionWindow
 from Gui.customerWindow import CustomerWindow
+from Gui.generalItemWindow import GeneralItemWindow
+from Gui.itemKindSelectionWindow import ItemKindSelectionWindow
+from Gui.mainWindow import MainWindow
+from Gui.settingsWindow import SettingsWindow
+from Gui.specificItemWindow import SpecificItemWindow
 from Gui.projectWindow import ProjectWindow
-from Gui.setup.windowSetup import (
-    main_window_setup,
-    customer_window_setup,
-    customer_selection_window_setup,
-    settings_window_setup,
-    project_window_setup,
-    item_window_setup, item_selection_window_setup,
-)
-from helpers.constants import Constants as const
+from helpers.constants import Constants as Const
 from models import Customer, UserSettings, Project, Item
 
 
@@ -30,79 +22,58 @@ class GuiController:
         ctk.set_default_color_theme('dark-blue')
 
     def open_main_window(self) -> None:
-        self.main_window = MainWindow(self, main_window_setup)
+        self.main_window = MainWindow(Const.main_window, self)
         self.main_window.mainloop()
 
-    def new_customer(self) -> None:
-        customer_window = CustomerWindow(self.main_window, self, customer_window_setup, customer=None)
+    def new_customer_window(self) -> None:
+        customer_window = CustomerWindow(self.main_window, Const.customer_window, self, customer=None)
         customer_window.grab_set()
 
-    def edit_customer(self) -> None:
-        customer_selection_window = CustomerSelectionWindow(
-            self.main_window,
-            self,
-            customer_selection_window_setup
-        )
-
+    def edit_customer_window(self) -> None:
+        customer_selection_window = CustomerSelectionWindow(self.main_window, Const.customer_selection, self)
         customer_selection_window.grab_set()
         self.main_window.wait_window(customer_selection_window)
         customer = self.get_customer(customer_selection_window.get_customer_values())
 
         if customer is not None:
-            customer_window = CustomerWindow(self.main_window, self, customer_window_setup, customer)
+            customer_window = CustomerWindow(self.main_window, Const.customer_window, self, customer)
             customer_window.grab_set()
 
-    def new_project(self) -> None:
-        project_window = ProjectWindow(
-            self.main_window,
-            self, project_window_setup,
-            operation=const.op_add
-        )
-
+    def new_project_window(self) -> None:
+        project_window = ProjectWindow(self.main_window, Const.project_window, self, operation=Const.op_add)
         project_window.grab_set()
 
-    def edit_project(self) -> None:
-        project_window = ProjectWindow(
-            self.main_window,
-            self,
-            project_window_setup,
-            operation=const.op_edit
-        )
-
+    def edit_project_window(self) -> None:
+        project_window = ProjectWindow(self.main_window, Const.project_window, self, operation=Const.op_edit)
         project_window.grab_set()
 
-    def new_item(self):
+    def new_item_window(self) -> None:
+        self.__new_or_edit_item(Const.op_add)
+
+    def edit_item_window(self) -> None:
+        self.__new_or_edit_item(Const.op_edit)
+
+    def __new_or_edit_item(self, operation):
         item_kind_window = ItemKindSelectionWindow(
             self.main_window,
+            Const.item_kind_selection,
             self,
-            item_selection_window_setup,
-            operation=const.op_add
+            operation=operation
         )
 
         item_kind_window.grab_set()
         self.main_window.wait_window(item_kind_window)
-        method = item_kind_window.get_selected_method()
-        method(const.op_add)
+        window_action = item_kind_window.get_selected_method()
 
-    def edit_item(self):
-        item_kind_window = ItemKindSelectionWindow(
-            self.main_window,
-            self,
-            item_selection_window_setup,
-            operation=const.op_edit
-        )
+        if window_action is not None:
+            window_action(operation)
 
-        item_kind_window.grab_set()
-        self.main_window.wait_window(item_kind_window)
-        method = item_kind_window.get_selected_method()
-        method(const.op_edit)
-
-    def general_item(self, operation: str) -> None:
-        item_window = GeneralItemWindow(self.main_window, self, item_window_setup, operation)
+    def general_item_window(self, operation: str) -> None:
+        item_window = GeneralItemWindow(self.main_window, Const.general_item_window, self, operation)
         item_window.grab_set()
 
-    def specific_item(self, operation: str):
-        item_window = SpecificItemWindow(self.main_window, self, item_window_setup, operation)
+    def specific_item_window(self, operation: str):
+        item_window = SpecificItemWindow(self.main_window, Const.specific_item_window, self, operation)
         item_window.grab_set()
 
     # TODO
@@ -118,8 +89,8 @@ class GuiController:
         pass
 
     # TODO
-    def open_settings(self):
-        settings_window = SettingsWindow(self.main_window, self, settings_window_setup)
+    def settings_window(self):
+        settings_window = SettingsWindow(self.main_window, Const.settings_window, self)
         settings_window.grab_set()
 
     # DatabaseManager calls --------------------------------------------------------------------------------------------

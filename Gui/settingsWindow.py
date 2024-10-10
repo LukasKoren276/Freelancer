@@ -1,21 +1,18 @@
-import tkinter as tk
 import customtkinter as ctk
 
-from Gui.setup.windowDetails import WindowDetails
-from models import UserSettings
-from helpers.dataValidation import DataValidation
 
-# TODO - refactor to ctk.CTkToplevel window
+from helpers.dataValidation import DataValidation
+from helpers.windowHelper import WindowHelper
+from models import UserSettings
+
 class SettingsWindow(ctk.CTkToplevel):
     width = 500
     height = 550
 
-    def __init__(self, parent, controller, window_details: WindowDetails):
+    def __init__(self, parent, window_title, controller):
         super().__init__(parent)
         self.controller = controller
-        self.title(window_details.title)
-        self.geometry(window_details.geometry)
-        self.resizable(*window_details.resizable)
+        self.title(window_title)
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
@@ -50,7 +47,10 @@ class SettingsWindow(ctk.CTkToplevel):
 
     def create_window_objects(self) -> None:
         for index, (name, (var, label_text)) in enumerate(self.fields.items()):
-            ctk.CTkLabel(self, text=label_text).grid(row=2 * index, column=1, padx=0, pady=0, sticky='SW')
+            ctk.CTkLabel(
+                self,
+                text=label_text
+            ).grid(row=2 * index, column=1, padx=0, pady=0 if index != 0 else (20, 0), sticky='SW')
 
             ctk.CTkEntry(
                 self,
@@ -63,7 +63,9 @@ class SettingsWindow(ctk.CTkToplevel):
             text='Save and Close',
             command=self.submit,
             font=ctk.CTkFont(family="Helvetica", size=15)
-        ).grid(row=2 * len(self.fields) + 1, column=1, pady=40)
+        ).grid(row=2 * len(self.fields) + 1, column=1, pady=(20, 0))
+
+        WindowHelper.size_and_center(self, resiz=False, center=False)
 
     def submit(self) -> None:
         user_settings = self.controller.get_user_settings()
