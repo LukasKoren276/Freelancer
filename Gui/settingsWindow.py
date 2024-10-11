@@ -1,9 +1,9 @@
 import customtkinter as ctk
 
-
 from helpers.dataValidation import DataValidation
 from helpers.windowHelper import WindowHelper
 from models import UserSettings
+
 
 class SettingsWindow(ctk.CTkToplevel):
     width = 500
@@ -20,7 +20,6 @@ class SettingsWindow(ctk.CTkToplevel):
         self.grid_columnconfigure(4, weight=1)
         self.grid_rowconfigure(0, minsize=50)
 
-
         self.common_fields = {
             'company_name': (ctk.StringVar(), 'Company Name'),
             'user_company_registration_number': (ctk.StringVar(), 'Company Registration Number'),
@@ -32,7 +31,7 @@ class SettingsWindow(ctk.CTkToplevel):
             'user_country': (ctk.StringVar(), 'Country')
         }
 
-        self.registed_as = {'user_registered_as': (ctk.StringVar(), 'User Registered As')}
+        self.registered_as = {'user_registered_as': (ctk.StringVar(), 'User Registered As')}
 
         self.others = {
             'account_number': (ctk.StringVar(), 'Account Number'),
@@ -61,12 +60,12 @@ class SettingsWindow(ctk.CTkToplevel):
 
         ctk.CTkLabel(
             self,
-            text=self.registed_as['user_registered_as'][1]
+            text=self.registered_as['user_registered_as'][1]
         ).grid(row=2 * len(self.common_fields) + 1, column=1, padx=0, pady=0, sticky='SW')
 
         ctk.CTkEntry(
             self,
-            textvariable=self.registed_as['user_registered_as'][0],
+            textvariable=self.registered_as['user_registered_as'][0],
             width=650
         ).grid(row=2 * len(self.common_fields) + 2, column=1, padx=0, pady=(0, 15), sticky='NW', columnspan=3)
 
@@ -96,7 +95,6 @@ class SettingsWindow(ctk.CTkToplevel):
                 textvariable=var,
                 width=300
             ).grid(row=row + 1, column=column, padx=0, pady=(0, 15), sticky='NW')
-
 
     def submit(self) -> None:
         user_settings = self.controller.get_user_settings()

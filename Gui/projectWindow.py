@@ -9,17 +9,12 @@ from models import Project
 
 class ProjectWindow(ctk.CTkToplevel):
 
-    def __init__(self, parent, entity_name: str, controller, operation: str):
+    def __init__(self, parent, entity_name: str, controller, mode: str):
         super().__init__(parent)
         self.entity_name = entity_name
         self.controller = controller
-        self.operation = operation
-
-        self.title(WindowHelper.get_title(
-            self.entity_name,
-            Const.op_add if self.operation == Const.op_add else Const.op_edit
-        ))
-
+        self.mode = mode
+        self.title(WindowHelper.get_title(self.entity_name, self.mode))
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
@@ -39,13 +34,13 @@ class ProjectWindow(ctk.CTkToplevel):
         self.customer_combobox = ctk.CTkComboBox(self, state="readonly", width=500, command=self.on_customer_select)
         self.customer_combobox.grid(row=1, column=1, padx=0, pady=(0, 15), sticky='NW')
 
-        if self.operation == Const.op_edit:
+        if self.mode == Const.mode_edit:
             ctk.CTkLabel(self, text='Project').grid(row=2, column=1, padx=0, pady=0, sticky='SW')
             self.project_combobox = ctk.CTkComboBox(self, state="readonly", width=500)
             self.project_combobox.grid(row=3, column=1, padx=0, pady=(0, 15), sticky='NW')
 
         ctk.CTkLabel(
-            self, text='New Project Name' if self.operation == Const.op_edit else 'Project Name'
+            self, text='New Project Name' if self.mode == Const.mode_edit else 'Project Name'
         ).grid(row=4, column=1, padx=0, pady=0, sticky='SW')
 
         ctk.CTkEntry(
@@ -54,7 +49,7 @@ class ProjectWindow(ctk.CTkToplevel):
 
         ctk.CTkButton(
             self,
-            text='Save Project and Close' if self.operation == Const.op_add else 'Update Project',
+            text='Save Project and Close' if self.mode == Const.mode_add else 'Update Project',
             command=self.submit,
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=6, column=1, pady=(20, 0))
@@ -82,7 +77,7 @@ class ProjectWindow(ctk.CTkToplevel):
 
     def on_customer_select(self, event=None) -> None:
         self.set_selected_customer()
-        if self.operation == Const.op_edit:
+        if self.mode == Const.mode_edit:
             self.load_projects_for_selected_customer()
 
     def set_selected_customer(self) -> None:
@@ -118,7 +113,7 @@ class ProjectWindow(ctk.CTkToplevel):
             Message.common_one_button_msg('fail', 'Invalid Input', 'Please select a customer.')
             return
 
-        if self.operation == Const.op_edit:
+        if self.mode == Const.mode_edit:
             project = self.get_selected_project()
 
             if not project:

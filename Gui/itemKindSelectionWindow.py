@@ -5,11 +5,11 @@ from helpers.windowHelper import WindowHelper
 
 class ItemKindSelectionWindow(ctk.CTkToplevel):
 
-    def __init__(self, parent, title, controller, operation: str):
+    def __init__(self, parent, title, controller, mode: str):
         super().__init__(parent)
         self.parent = parent
         self.controller = controller
-        self.operation = operation
+        self.mode = mode
         self.title(title)
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
@@ -24,20 +24,20 @@ class ItemKindSelectionWindow(ctk.CTkToplevel):
     def create_window_objects(self) -> None:
         ctk.CTkLabel(
             self,
-            text=f'What kind of item would you like to {self.operation}'
+            text=f'What kind of item would you like to {self.mode}'
         ).grid(row=0, column=1, padx=0, pady=0, columnspan=3, sticky='w')
 
         ctk.CTkButton(
             self,
-            text=f'{self.operation.capitalize()} General Item',
-            command=lambda: self.set_selected_method(self.controller.general_item_window),
+            text=f'{self.mode.capitalize()} General Item',
+            command=lambda: self.set_selected_method(self.controller.__general_item_window),
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=1, column=1, sticky='e')
 
         ctk.CTkButton(
             self,
-            text=f'{self.operation.capitalize()} Specific Item',
-            command=lambda: self.set_selected_method(self.controller.specific_item_window),
+            text=f'{self.mode.capitalize()} Specific Item',
+            command=lambda: self.set_selected_method(self.controller.__specific_item_window),
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=1, column=3, sticky='e')
 

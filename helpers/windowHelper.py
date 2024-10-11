@@ -6,12 +6,12 @@ from helpers.constants import Constants
 class WindowHelper:
 
     @staticmethod
-    def get_title(entity_name: str,  operation: str) -> str:
-        if operation == Constants.op_add:
+    def get_title(entity_name: str, mode: str) -> str:
+        if mode == Constants.mode_add:
             prefix = 'New'
-        elif operation == Constants.op_edit:
+        elif mode == Constants.mode_edit:
             prefix = 'Edit'
-        elif operation == Constants.op_delete:
+        elif mode == Constants.mode_delete:
             prefix = 'Delete'
         else:
             raise ValueError('Unknown operation for the title creation.')

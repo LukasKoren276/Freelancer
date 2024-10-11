@@ -9,9 +9,9 @@ class Constants:
     specific_item_window = 'Specific Item'
     settings_window = 'User Settings'
 
-    op_add = 'add'
-    op_edit = 'edit'
-    op_delete = 'delete'
+    mode_add = 'add'
+    mode_edit = 'edit'
+    mode_delete = 'delete'
 
     price_units = {
         'pieces': 'pcs',

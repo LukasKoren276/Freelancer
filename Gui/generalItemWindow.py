@@ -9,12 +9,12 @@ from models import Item
 
 class GeneralItemWindow(ctk.CTkToplevel):
 
-    def __init__(self, parent: ctk.CTk, entity_name: str, controller, operation: str):
+    def __init__(self, parent: ctk.CTk, entity_name: str, controller, mode: str):
         super().__init__(parent)
         self.entity_name = entity_name
         self.controller = controller
-        self.operation = operation
-        self.title(WindowHelper.get_title(self.entity_name, operation))
+        self.mode = mode
+        self.title(WindowHelper.get_title(self.entity_name, mode))
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
@@ -34,7 +34,7 @@ class GeneralItemWindow(ctk.CTkToplevel):
 
     def create_window_objects(self) -> None:
         row = 0
-        if self.operation == Const.op_edit:
+        if self.mode == Const.mode_edit:
             ctk.CTkLabel(self, text='Select Item to Edit').grid(row=row, column=1, padx=0, pady=0, sticky='SW')
             row += 1
 
@@ -54,7 +54,7 @@ class GeneralItemWindow(ctk.CTkToplevel):
                     self,
                     textvariable=var,
                     width=300,
-                    state='disabled' if self.operation == Const.op_edit else 'normal'
+                    state='disabled' if self.mode == Const.mode_edit else 'normal'
                 )
                 entry.grid(row=row, column=1, padx=0, pady=(0, 15), sticky='NW')
                 row += 1
@@ -62,7 +62,7 @@ class GeneralItemWindow(ctk.CTkToplevel):
             else:
                 self.price_unit_combobox = ctk.CTkComboBox(
                     self,
-                    state='disabled' if self.operation == Const.op_edit else 'readonly',
+                    state='disabled' if self.mode == Const.mode_edit else 'readonly',
                     width=300,
                     command=self.on_price_unit_select
                 )
@@ -71,7 +71,7 @@ class GeneralItemWindow(ctk.CTkToplevel):
 
         ctk.CTkButton(
             self,
-            text='Save Item and Close' if self.operation == Const.op_add else 'Update Item',
+            text='Save Item and Close' if self.mode == Const.mode_add else 'Update Item',
             command=self.submit,
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=row, column=1, pady=(20, 0))
@@ -87,7 +87,7 @@ class GeneralItemWindow(ctk.CTkToplevel):
         self.fields['price_unit'][0].set(price_units[0])
 
     def load_combo_general_items(self) -> None:
-        if self.operation == Const.op_edit:
+        if self.mode == Const.mode_edit:
             self.general_items = self.controller.get_general_items()
             item_values = [item.item_name for item in self.general_items]
             self.general_item_combobox.configure(values=item_values)
@@ -126,7 +126,7 @@ class GeneralItemWindow(ctk.CTkToplevel):
         if validated_data is None:
             return
 
-        if self.operation == Const.op_edit:
+        if self.mode == Const.mode_edit:
             result = self.controller.update_item(self.selected_item, validated_data)
         else:
             result = self.controller.save_item(validated_data)

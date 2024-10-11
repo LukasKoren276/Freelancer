@@ -14,7 +14,10 @@ class CustomerWindow(ctk.CTkToplevel):
         self.entity_name = entity_name
         self.controller = controller
         self.customer = customer
-        self.title(WindowHelper.get_title(self.entity_name, Const.op_add if self.customer is None else Const.op_edit))
+        self.title(
+            WindowHelper.get_title(self.entity_name, Const.mode_add if self.customer is None else Const.mode_edit)
+        )
+
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)

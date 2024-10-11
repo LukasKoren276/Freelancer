@@ -1,10 +1,10 @@
 import customtkinter as ctk
 
+from Gui.modeSelectionWindow import ModeSelectionWindow
 from controllers.databaseManager import DatabaseManager
 from Gui.customerSelectionWindow import CustomerSelectionWindow
 from Gui.customerWindow import CustomerWindow
 from Gui.generalItemWindow import GeneralItemWindow
-from Gui.itemKindSelectionWindow import ItemKindSelectionWindow
 from Gui.mainWindow import MainWindow
 from Gui.settingsWindow import SettingsWindow
 from Gui.specificItemWindow import SpecificItemWindow
@@ -25,56 +25,88 @@ class GuiController:
         self.main_window = MainWindow(Const.main_window, self)
         self.main_window.mainloop()
 
-    def new_customer_window(self) -> None:
-        customer_window = CustomerWindow(self.main_window, Const.customer_window, self, customer=None)
+    def customer_management(self):
+        result = self.__mode_selection_window(
+            Const.customer_window,
+            names=(Const.customer_window,),
+            functions=(self.__customer_window,),
+            modes=(Const.mode_add, Const.mode_edit, Const.mode_delete)
+        )
+
+        if result is not None:
+            function, mode = result
+
+            match mode:
+                case Const.mode_add: self.__customer_window()
+                case Const.mode_edit | Const.mode_delete: self.__customer_selection()
+
+    def __customer_window(self, customer: Customer = None) -> None:
+        customer_window = CustomerWindow(self.main_window, Const.customer_window, self, customer)
         customer_window.grab_set()
 
-    def edit_customer_window(self) -> None:
+    # TODO extend customerWindow - add mode parameter to distinguish between edit and delete
+    def __customer_selection(self) -> None:
         customer_selection_window = CustomerSelectionWindow(self.main_window, Const.customer_selection, self)
         customer_selection_window.grab_set()
         self.main_window.wait_window(customer_selection_window)
         customer = self.get_customer(customer_selection_window.get_customer_values())
 
         if customer is not None:
-            customer_window = CustomerWindow(self.main_window, Const.customer_window, self, customer)
-            customer_window.grab_set()
+            self.__customer_window(customer)
 
-    def new_project_window(self) -> None:
-        project_window = ProjectWindow(self.main_window, Const.project_window, self, operation=Const.op_add)
-        project_window.grab_set()
-
-    def edit_project_window(self) -> None:
-        project_window = ProjectWindow(self.main_window, Const.project_window, self, operation=Const.op_edit)
-        project_window.grab_set()
-
-    def new_item_window(self) -> None:
-        self.__new_or_edit_item(Const.op_add)
-
-    def edit_item_window(self) -> None:
-        self.__new_or_edit_item(Const.op_edit)
-
-    def __new_or_edit_item(self, operation):
-        item_kind_window = ItemKindSelectionWindow(
-            self.main_window,
-            Const.item_kind_selection,
-            self,
-            operation=operation
+    def project_management(self):
+        result = self.__mode_selection_window(
+            Const.project_window,
+            names=(Const.project_window,),
+            functions=(self.__project_window,),
+            modes=(Const.mode_add, Const.mode_edit, Const.mode_delete)
         )
 
-        item_kind_window.grab_set()
-        self.main_window.wait_window(item_kind_window)
-        window_action = item_kind_window.get_selected_method()
+        if result is not None:
+            function, mode = result
+            function(mode)
 
-        if window_action is not None:
-            window_action(operation)
+    def __project_window(self, mode: str) -> None:
+        project_window = ProjectWindow(self.main_window, Const.project_window, self, mode=mode)
+        project_window.grab_set()
 
-    def general_item_window(self, operation: str) -> None:
-        item_window = GeneralItemWindow(self.main_window, Const.general_item_window, self, operation)
+    def item_management(self):
+        result = self.__mode_selection_window(
+            Const.item_window,
+            names=(Const.general_item_window, Const.specific_item_window),
+            functions=(self.__general_item_window, self.__specific_item_window),
+            modes=(Const.mode_add, Const.mode_edit, Const.mode_delete)
+        )
+
+        if result is not None:
+            function, mode = result
+            function(mode)
+
+    def __general_item_window(self, mode: str) -> None:
+        item_window = GeneralItemWindow(self.main_window, Const.general_item_window, self, mode)
         item_window.grab_set()
 
-    def specific_item_window(self, operation: str):
-        item_window = SpecificItemWindow(self.main_window, Const.specific_item_window, self, operation)
+    def __specific_item_window(self, mode: str):
+        item_window = SpecificItemWindow(self.main_window, Const.specific_item_window, self, mode)
         item_window.grab_set()
+
+    def __mode_selection_window(self, title, **kwargs) -> tuple | None:
+        names = kwargs.get('names')
+        functions = kwargs.get('functions')
+        modes = kwargs.get('modes')
+
+        if (names is not None or functions is not None or modes is not None) and len(names) == len(functions):
+            selection_window = ModeSelectionWindow(self.main_window, self, title, names, functions, modes)
+
+            selection_window.grab_set()
+            self.main_window.wait_window(selection_window)
+            function = selection_window.get_selected_function()
+            mode = selection_window.get_selected_mode()
+
+            if function is not None and mode is not None:
+                return function, mode
+        else:
+            return None
 
     # TODO
     def log_time(self):
