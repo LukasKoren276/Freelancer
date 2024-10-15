@@ -82,7 +82,7 @@ class CustomerSelectionWindow(ctk.CTkToplevel):
         for i in self.customer_list.get_children():
             self.customer_list.delete(i)
 
-        customers = self.controller.get_customers()
+        customers = self.controller.get_active_customers()
 
         for index, customer in enumerate(customers):
             item_id = self.customer_list.insert(

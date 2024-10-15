@@ -42,6 +42,7 @@ class SettingsWindow(ctk.CTkToplevel):
             'vat': (ctk.StringVar(), 'VAT [%]')
         }
 
+        self.all_fields = self.common_fields | self.registered_as | self.others
         self.load_user_settings()
         self.create_window_objects()
 
@@ -49,7 +50,7 @@ class SettingsWindow(ctk.CTkToplevel):
         user_settings = self.controller.get_user_settings()
 
         if user_settings:
-            for field_name, (var, _) in self.common_fields.items():
+            for field_name, (var, _) in self.all_fields.items():
                 value = getattr(user_settings, field_name, None)
 
                 if value is not None:
@@ -98,7 +99,7 @@ class SettingsWindow(ctk.CTkToplevel):
 
     def submit(self) -> None:
         user_settings = self.controller.get_user_settings()
-        validated_data = DataValidation.validate_data(UserSettings, self.common_fields)
+        validated_data = DataValidation.validate_data(UserSettings, self.all_fields)
 
         if validated_data is None:
             return

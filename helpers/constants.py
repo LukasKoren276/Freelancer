@@ -18,3 +18,9 @@ class Constants:
         'hours': 'hrs',
         'kilometers': 'km'
     }
+
+    status_active = 'active'
+    status_deleted = 'deleted'
+
+    yes = 'yes'
+    no = 'no'

@@ -37,22 +37,21 @@ class GuiController:
             function, mode = result
 
             match mode:
-                case Const.mode_add: self.__customer_window()
-                case Const.mode_edit | Const.mode_delete: self.__customer_selection()
+                case Const.mode_add: self.__customer_window(mode)
+                case Const.mode_edit | Const.mode_delete: self.__customer_selection(mode)
 
-    def __customer_window(self, customer: Customer = None) -> None:
-        customer_window = CustomerWindow(self.main_window, Const.customer_window, self, customer)
+    def __customer_window(self, mode: str, customer: Customer = None) -> None:
+        customer_window = CustomerWindow(self.main_window, Const.customer_window, self, mode, customer)
         customer_window.grab_set()
 
-    # TODO extend customerWindow - add mode parameter to distinguish between edit and delete
-    def __customer_selection(self) -> None:
+    def __customer_selection(self, mode: str) -> None:
         customer_selection_window = CustomerSelectionWindow(self.main_window, Const.customer_selection, self)
         customer_selection_window.grab_set()
         self.main_window.wait_window(customer_selection_window)
         customer = self.get_customer(customer_selection_window.get_customer_values())
 
         if customer is not None:
-            self.__customer_window(customer)
+            self.__customer_window(mode, customer)
 
     def project_management(self):
         result = self.__mode_selection_window(
@@ -130,6 +129,9 @@ class GuiController:
     def get_customers(self) -> list | None:
         return self.db_manager.get_entities(Customer)
 
+    def get_active_customers(self) -> list | None:
+        return self.db_manager.get_active_entities(Customer)
+
     def get_customer(self, values: tuple | None) -> Customer | None:
         if values:
             return self.db_manager.get_customer(values)
@@ -141,8 +143,14 @@ class GuiController:
     def update_customer(self, original_customer: Customer, new_customer_data: dict) -> bool:
         return self.db_manager.update_entity(original_customer, new_customer_data)
 
+    def delete_customer(self, customer: Customer) -> bool:
+        return self.db_manager.delete_entity(customer)
+
     def get_projects(self) -> list | None:
         return self.db_manager.get_entities(Project)
+
+    def get_active_projects(self) -> list | None:
+        return self.db_manager.get_active_entities(Project)
 
     def get_project_by_customer_id_and_name(self, customer_id: int, project_name: str) -> Project | None:
         return self.db_manager.get_project_by_customer_id_and_name(customer_id, project_name)
@@ -153,8 +161,17 @@ class GuiController:
     def update_project(self, original_project: Project, project_data: dict) -> bool:
         return self.db_manager.update_entity(original_project, project_data)
 
+    def delete_project(self, project: Project) -> bool:
+        return self.db_manager.delete_entity(project)
+
+    def delete_project_and_all_items(self, project: Project) -> bool:
+        return self.db_manager.delete_project_and_all_items(project)
+
     def get_general_items(self) -> list | None:
         return self.db_manager.get_general_items()
+
+    def get_active_general_items(self) -> list | None:
+        return self.db_manager.get_active_general_items()
 
     def get_items_by_project_or_general(self, project_id: int) -> list | None:
         return self.db_manager.get_items_by_project_or_general(project_id)
@@ -164,6 +181,9 @@ class GuiController:
 
     def update_item(self, original_item: Item, item_data: dict) -> bool:
         return self.db_manager.update_entity(original_item, item_data)
+
+    def delete_item(self, item: Item) -> bool:
+        return self.db_manager.delete_entity(item)
 
     def get_user_settings(self) -> UserSettings | None:
         return self.db_manager.get_user_settings()

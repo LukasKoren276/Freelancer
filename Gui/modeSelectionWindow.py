@@ -5,7 +5,7 @@ from helpers.windowHelper import WindowHelper
 
 class ModeSelectionWindow(ctk.CTkToplevel):
 
-    def __init__(self, parent, controller, title_name, names: tuple,  functions: tuple, modes: tuple):
+    def __init__(self, parent: ctk.CTk, controller, title_name, names: tuple,  functions: tuple, modes: tuple):
         super().__init__(parent)
         self.parent = parent
         self.controller = controller
@@ -32,7 +32,7 @@ class ModeSelectionWindow(ctk.CTkToplevel):
             ctk.CTkLabel(
                 self,
                 text=f'Select operation type with {name}'
-            ).grid(row=row_index, column=1, padx=0, pady=(50, 0), columnspan=3, sticky='w')
+            ).grid(row=row_index, column=1, padx=0, pady=(20, 10), columnspan=3, sticky='w')
             row_index += 1
 
             for mode_index, mode in enumerate(self.modes):
@@ -41,11 +41,11 @@ class ModeSelectionWindow(ctk.CTkToplevel):
                     text=f'{mode.capitalize()} {name}',
                     command=lambda f=function, m=mode: self.__set_properties(f, m),
                     font=ctk.CTkFont(family="Helvetica", size=15)
-                ).grid(row=row_index, column=2 * mode_index + 1)
+                ).grid(row=row_index, column=2 * mode_index + 1, pady=(0, 20))
 
             row_index += 1
 
-        WindowHelper.size_and_center(self, resiz=False, center=False, margin=0)
+        WindowHelper.size_and_center(self, resiz=False, center=False, margin=20)
 
     def __set_properties(self, function, mode) -> None:
         self.__selected_function = function

@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, UniqueConstraint
 from sqlalchemy.orm import relationship
 from . import Base
 
+from helpers.constants import Constants as Const
+
 
 class Customer(Base):
     __tablename__ = 'customers'
@@ -15,6 +17,7 @@ class Customer(Base):
     city = Column(String(50), nullable=False)
     country = Column(String(50), nullable=False)
     company_registration_number = Column(String(50), nullable=False)
+    status = Column(String(10), default=Const.status_active, nullable=False)
 
     projects = relationship('Project', order_by='Project.project_id', back_populates='customer')
 

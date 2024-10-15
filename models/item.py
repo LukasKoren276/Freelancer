@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from . import Base
 
+from helpers.constants import Constants as Const
+
 
 class Item(Base):
     __tablename__ = 'items'
@@ -12,6 +14,7 @@ class Item(Base):
     item_note = Column(String(255), nullable=True)
     item_price_per_unit = Column(Integer, nullable=False)
     price_unit = Column(String(10), nullable=False)
+    status = Column(String(10), default=Const.status_active, nullable=False)
 
     project = relationship('Project', back_populates='items')
     times = relationship('ItemTime', order_by='ItemTime.item_time_id', back_populates='item')
