@@ -62,7 +62,6 @@ class CustomerWindow(ctk.CTkToplevel):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
-        self.grid_rowconfigure(0, minsize=20)
 
     def create_window_objects(self) -> None:
         for index, (name, (var, label_text)) in enumerate(self.fields.items()):
@@ -87,7 +86,7 @@ class CustomerWindow(ctk.CTkToplevel):
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=2 * len(self.fields) + 1, column=1, pady=(20, 0))
 
-        WindowHelper.size_and_center(self, resiz=False, center=False)
+        WindowHelper.size_and_center(self, resiz=False)
 
     def submit(self) -> None:
         validated_data = DataValidation.validate_data(Customer, self.fields)

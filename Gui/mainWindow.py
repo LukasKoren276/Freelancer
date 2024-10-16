@@ -11,11 +11,12 @@ class MainWindow(ctk.CTk):
         self.controller = controller
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
-        self.grid_columnconfigure(2, weight=0, minsize=40)
+        self.grid_columnconfigure(2, weight=0, minsize=80)
         self.grid_columnconfigure(3, weight=0)
-        self.grid_columnconfigure(4, weight=0, minsize=40)
+        self.grid_columnconfigure(4, weight=0, minsize=80)
         self.grid_columnconfigure(5, weight=0)
         self.grid_columnconfigure(6, weight=1)
+        self.grid_rowconfigure(0, minsize=20)
 
         self.button_definitions = {
             'Customer management': self.controller.customer_management,
@@ -40,4 +41,4 @@ class MainWindow(ctk.CTk):
                 self, text=button_name, font=button_font, command=action
             ).grid(row=row, column=column, padx=0, pady=(40, 0), sticky='ew')
 
-        WindowHelper.size_and_center(self, resiz=False, center=True, margin=50)
+        WindowHelper.size_and_center(self, resiz=False, center=True)

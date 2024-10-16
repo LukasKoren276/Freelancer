@@ -31,7 +31,6 @@ class ProjectWindow(ctk.CTkToplevel):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
-        self.grid_rowconfigure(0, minsize=50)
 
     def create_window_objects(self) -> None:
         self.create_customer_selection()
@@ -40,11 +39,11 @@ class ProjectWindow(ctk.CTkToplevel):
         if self.mode in [Const.mode_add, Const.mode_edit]:
             self.create_project_name_entry()
         self.create_submit_button()
-        WindowHelper.size_and_center(self, resiz=False, center=False)
+        WindowHelper.size_and_center(self, resiz=False)
         self.load_combo_customers()
 
     def create_customer_selection(self) -> None:
-        ctk.CTkLabel(self, text='Customer').grid(row=0, column=1, padx=0, pady=0, sticky='SW')
+        ctk.CTkLabel(self, text='Customer').grid(row=0, column=1, padx=0, pady=(20, 0), sticky='SW')
         self.customer_combobox = ctk.CTkComboBox(
             self,
             state="readonly",

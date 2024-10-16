@@ -68,7 +68,7 @@ class CustomerSelectionWindow(ctk.CTkToplevel):
         ).grid(row=1, column=0, padx=10, pady=30)
 
         self.load_customers()
-        WindowHelper.size_and_center(self, resiz=True, center=False)
+        WindowHelper.size_and_center(self, resiz=True)
         self.autosize_columns()
 
     def autosize_columns(self) -> None:

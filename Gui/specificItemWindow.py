@@ -38,12 +38,11 @@ class SpecificItemWindow(ctk.CTkToplevel):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
-        self.grid_rowconfigure(0, minsize=50)
 
     def create_window_objects(self) -> None:
         row = 0
 
-        ctk.CTkLabel(self, text='Customer').grid(row=row, column=1, padx=0, pady=0, sticky='SW')
+        ctk.CTkLabel(self, text='Customer').grid(row=row, column=1, padx=0, pady=(20, 0), sticky='SW')
         row += 1
 
         self.customer_combobox = ctk.CTkComboBox(
@@ -121,7 +120,7 @@ class SpecificItemWindow(ctk.CTkToplevel):
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=row, column=1, pady=(20, 0))
 
-        WindowHelper.size_and_center(self, resiz=False, center=False)
+        WindowHelper.size_and_center(self, resiz=False)
         self.load_combo_customers()
         self.load_combo_price_units()
 

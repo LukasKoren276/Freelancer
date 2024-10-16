@@ -11,14 +11,8 @@ class SettingsWindow(ctk.CTkToplevel):
 
     def __init__(self, parent, window_title, controller):
         super().__init__(parent)
+        self.window_title = window_title
         self.controller = controller
-        self.title(window_title)
-        self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(1, weight=0)
-        self.grid_columnconfigure(2, weight=0, minsize=50)
-        self.grid_columnconfigure(3, weight=0)
-        self.grid_columnconfigure(4, weight=1)
-        self.grid_rowconfigure(0, minsize=50)
 
         self.common_fields = {
             'company_name': (ctk.StringVar(), 'Company Name'),
@@ -43,8 +37,17 @@ class SettingsWindow(ctk.CTkToplevel):
         }
 
         self.all_fields = self.common_fields | self.registered_as | self.others
+        self.setup_window()
         self.load_user_settings()
         self.create_window_objects()
+
+    def setup_window(self):
+        self.title(self.window_title)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=0)
+        self.grid_columnconfigure(2, weight=0, minsize=50)
+        self.grid_columnconfigure(3, weight=0)
+        self.grid_columnconfigure(4, weight=1)
 
     def load_user_settings(self) -> None:
         user_settings = self.controller.get_user_settings()
@@ -79,7 +82,7 @@ class SettingsWindow(ctk.CTkToplevel):
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=2 * len(self.common_fields) + 2 * len(self.others) + 1, column=1, pady=(20, 0), columnspan=3)
 
-        WindowHelper.size_and_center(self, resiz=False, center=False)
+        WindowHelper.size_and_center(self, resiz=False)
 
     def create_two_column_widgets(self, start: int, fields: dict):
         for index, (name, (var, label_text)) in enumerate(fields.items()):

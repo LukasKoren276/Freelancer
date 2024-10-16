@@ -7,6 +7,7 @@ class WindowHelper:
 
     @staticmethod
     def get_title(entity_name: str, mode: str) -> str:
+        # TODO use match mode:
         if mode == Constants.mode_add:
             prefix = 'New'
         elif mode == Constants.mode_edit:
@@ -19,10 +20,13 @@ class WindowHelper:
         return f'{prefix} {entity_name}'
 
     @staticmethod
-    def size_and_center(window: ctk.CTk | ctk.CTkToplevel, resiz: bool, center: bool = False, margin: int = 50) -> None:
+    def size_and_center(window: ctk.CTk | ctk.CTkToplevel, resiz: bool, center: bool = False, margin_ratio: float = 0.03) -> None:
+
         window.update_idletasks()
-        window_width = window.winfo_reqwidth() + margin
-        window_height = window.winfo_reqheight() + margin
+        screen_width = window.winfo_screenwidth()
+        screen_height = window.winfo_screenheight()
+        window_width = window.winfo_reqwidth() + int(screen_width * margin_ratio)
+        window_height = window.winfo_reqheight() + int(screen_height * margin_ratio)
 
         if not center:
             window.geometry(f"{window_width}x{window_height}")

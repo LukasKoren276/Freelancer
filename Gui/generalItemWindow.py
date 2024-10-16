@@ -33,12 +33,11 @@ class GeneralItemWindow(ctk.CTkToplevel):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
         self.grid_columnconfigure(2, weight=1)
-        self.grid_rowconfigure(0, minsize=50)
 
     def create_window_objects(self) -> None:
         row = 0
         if self.mode == Const.mode_edit or self.mode == Const.mode_delete:
-            ctk.CTkLabel(self, text='Item').grid(row=row, column=1, padx=0, pady=0, sticky='SW')
+            ctk.CTkLabel(self, text='Item').grid(row=row, column=1, padx=0, pady=(20, 0), sticky='SW')
             row += 1
 
             self.general_item_combobox = ctk.CTkComboBox(
@@ -55,7 +54,7 @@ class GeneralItemWindow(ctk.CTkToplevel):
         for name, (var, label_text) in self.fields.items():
             ctk.CTkLabel(
                 self, text=label_text
-            ).grid(row=row, column=1, padx=0, pady=0, sticky='SW')
+            ).grid(row=row, column=1, padx=0, pady=(20 if row == 0 else 0, 0), sticky='SW')
             row += 1
 
             if name != last_key:
@@ -91,7 +90,7 @@ class GeneralItemWindow(ctk.CTkToplevel):
             font=ctk.CTkFont(family="Helvetica", size=15)
         ).grid(row=row, column=1, pady=(20, 0))
 
-        WindowHelper.size_and_center(self, resiz=False, center=False)
+        WindowHelper.size_and_center(self, resiz=False)
         self.load_combo_price_units()
         self.load_combo_general_items()
 

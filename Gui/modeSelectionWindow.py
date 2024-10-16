@@ -20,7 +20,6 @@ class ModeSelectionWindow(ctk.CTkToplevel):
         self.grid_columnconfigure(4, weight=0, minsize=80)
         self.grid_columnconfigure(5, weight=0)
         self.grid_columnconfigure(6, weight=1)
-        self.grid_rowconfigure(0, minsize=20)
         self.__selected_function = None
         self.__selected_mode = None
 
@@ -41,11 +40,17 @@ class ModeSelectionWindow(ctk.CTkToplevel):
                     text=f'{mode.capitalize()} {name}',
                     command=lambda f=function, m=mode: self.__set_properties(f, m),
                     font=ctk.CTkFont(family="Helvetica", size=15)
-                ).grid(row=row_index, column=2 * mode_index + 1, pady=(0, 20))
+                ).grid(row=row_index, column=2 * mode_index + 1, pady=(0, 0))
 
             row_index += 1
+            if len(self.functions) > 1 and row_index%2 == 0:
+                ctk.CTkLabel(
+                    self,
+                    text=f'OR'
+                ).grid(row=row_index, column=2, padx=0, pady=(30, 0), columnspan=3, sticky='ew')
+                row_index += 1
 
-        WindowHelper.size_and_center(self, resiz=False, center=False, margin=20)
+        WindowHelper.size_and_center(self, resiz=False, center=False)
 
     def __set_properties(self, function, mode) -> None:
         self.__selected_function = function
