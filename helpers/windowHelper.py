@@ -1,4 +1,6 @@
 import customtkinter as ctk
+import ctypes
+import sys
 
 from helpers.constants import Constants
 
@@ -7,26 +9,27 @@ class WindowHelper:
 
     @staticmethod
     def get_title(entity_name: str, mode: str) -> str:
-        # TODO use match mode:
-        if mode == Constants.mode_add:
-            prefix = 'New'
-        elif mode == Constants.mode_edit:
-            prefix = 'Edit'
-        elif mode == Constants.mode_delete:
-            prefix = 'Delete'
-        else:
-            raise ValueError('Unknown operation for the title creation.')
+        match mode:
+            case Constants.mode_add: prefix = 'New'
+            case Constants.mode_edit: prefix = 'Edit'
+            case Constants.mode_delete: prefix = 'Delete'
+            case _: raise ValueError('Unknown operation for the title creation.')
 
         return f'{prefix} {entity_name}'
 
     @staticmethod
-    def size_and_center(window: ctk.CTk | ctk.CTkToplevel, resiz: bool, center: bool = False, margin_ratio: float = 0.03) -> None:
-
+    def size_and_center(
+            window: ctk.CTk | ctk.CTkToplevel,
+            resiz: bool,
+            center: bool = False,
+            margin_ratio: float = 0.03
+    ) -> None:
         window.update_idletasks()
+        factor = WindowHelper.__get_dpi_scaling_factor()
         screen_width = window.winfo_screenwidth()
         screen_height = window.winfo_screenheight()
-        window_width = window.winfo_reqwidth() + int(screen_width * margin_ratio)
-        window_height = window.winfo_reqheight() + int(screen_height * margin_ratio)
+        window_width = int(window.winfo_reqwidth() / factor) + int(screen_width * margin_ratio / factor)
+        window_height = int(window.winfo_reqheight() / factor) + int(screen_height * margin_ratio / factor)
 
         if not center:
             window.geometry(f"{window_width}x{window_height}")
@@ -34,6 +37,17 @@ class WindowHelper:
             WindowHelper.__center_window(window, window_width, window_height)
 
         window.resizable(resiz, resiz)
+
+    @staticmethod
+    def __get_dpi_scaling_factor() -> float:
+        if sys.platform == "win32":
+            hdc = ctypes.windll.user32.GetDC(0)
+            dpi = ctypes.windll.gdi32.GetDeviceCaps(hdc, 88)
+            ctypes.windll.user32.ReleaseDC(0, hdc)
+
+            return dpi / 96.0
+
+        return 1.0
 
     @staticmethod
     def __center_window(window: ctk.CTkToplevel, window_width: int, window_height: int) -> None:

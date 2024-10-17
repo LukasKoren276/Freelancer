@@ -43,7 +43,7 @@ class ModeSelectionWindow(ctk.CTkToplevel):
                 ).grid(row=row_index, column=2 * mode_index + 1, pady=(0, 0))
 
             row_index += 1
-            if len(self.functions) > 1 and row_index%2 == 0:
+            if len(self.functions) > 1 and row_index % 2 == 0:
                 ctk.CTkLabel(
                     self,
                     text=f'OR'
