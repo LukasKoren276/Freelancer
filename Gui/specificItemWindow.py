@@ -154,7 +154,9 @@ class SpecificItemWindow(ctk.CTkToplevel):
             self.load_projects_for_selected_customer()
 
     def load_projects_for_selected_customer(self) -> None:
-        project_names = [project.project_name for project in self.selected_customer.projects]
+        project_names = [
+            project.project_name for project in self.selected_customer.projects if project.status == Const.status_active
+        ]
         self.project_combobox.configure(values=project_names)
 
         if project_names:
@@ -168,7 +170,9 @@ class SpecificItemWindow(ctk.CTkToplevel):
 
         if self.selected_project is not None:
             if self.mode in [Const.mode_edit, Const.mode_delete]:
-                item_names = [item.item_name for item in self.selected_project.items]
+                item_names = [
+                    item.item_name for item in self.selected_project.items if item.status == Const.status_active
+                ]
                 self.reset_combobox(self.item_combobox, item_names)
 
                 if item_names:
