@@ -117,12 +117,7 @@ class ProjectWindow(ctk.CTkToplevel):
             project.project_name for project in self.selected_customer.projects if project.status == Const.status_active
         ]
 
-        self.reset_combobox(self.project_combobox, project_names)
-
-    def reset_combobox(self, combobox, values=None):
-        if combobox:
-            combobox.set('')
-            combobox.configure(state='readonly' if values else 'disabled', values=values or [])
+        WindowHelper.reset_combobox(self.project_combobox, project_names)
 
     def clear_fields(self) -> None:
         for var, _ in self.fields.values():

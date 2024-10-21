@@ -56,3 +56,9 @@ class WindowHelper:
         position_right = int(screen_width / 2 - window_width / 2)
         position_down = int(screen_height / 2 - window_height / 2)
         window.geometry(f"{window_width}x{window_height}+{position_right}+{position_down}")
+
+    @staticmethod
+    def reset_combobox(combobox, values=None):
+        if combobox:
+            combobox.set('')
+            combobox.configure(state='readonly' if values else 'disabled', values=values or [])

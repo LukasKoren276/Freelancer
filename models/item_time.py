@@ -8,9 +8,8 @@ class ItemTime(Base):
 
     item_time_id = Column(Integer, primary_key=True)
     item_id = Column(Integer, ForeignKey('items.item_id'), nullable=False)
-    time_from = Column(DateTime, nullable=False)
-    time_to = Column(DateTime, nullable=False)
-    duration_seconds = Column(Integer, nullable=False)
+    record_date = Column(DateTime, nullable=False)
+    duration_seconds = Column(Integer, nullable=False, default=0)
     item_time_note = Column(String(255))
 
     item = relationship('Item', back_populates='times')

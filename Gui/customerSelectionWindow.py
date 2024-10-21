@@ -1,4 +1,3 @@
-import tkinter as tk
 from tkinter import ttk
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
@@ -49,12 +48,12 @@ class CustomerSelectionWindow(ctk.CTkToplevel):
         style.configure("Treeview", rowheight=25, font=('Helvetica', 10),)
 
         for key, value in self.columns.items():
-            self.customer_list.heading(key, text=value, anchor=tk.W)
-            self.customer_list.column(key, anchor=tk.W)
+            self.customer_list.heading(key, text=value, anchor=ctk.W)
+            self.customer_list.column(key, anchor=ctk.W)
 
         self.customer_list.grid(row=0, column=0, sticky='nsew')
-        scrollbar_x = ttk.Scrollbar(self.list_frame, orient=tk.HORIZONTAL, command=self.customer_list.xview)
-        scrollbar_y = ttk.Scrollbar(self.list_frame, orient=tk.VERTICAL, command=self.customer_list.yview)
+        scrollbar_x = ttk.Scrollbar(self.list_frame, orient=ctk.HORIZONTAL, command=self.customer_list.xview)
+        scrollbar_y = ttk.Scrollbar(self.list_frame, orient=ctk.VERTICAL, command=self.customer_list.yview)
         self.customer_list.configure(xscrollcommand=scrollbar_x.set, yscrollcommand=scrollbar_y.set)
         scrollbar_y.grid(row=0, column=1, sticky='ns')
         scrollbar_x.grid(row=1, column=0, sticky='ew')

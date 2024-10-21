@@ -22,7 +22,7 @@ class MainWindow(ctk.CTk):
             'Customer management': self.controller.customer_management,
             'Project Management': self.controller.project_management,
             'Item management': self.controller.item_management,
-            'Log Time': self.controller.log_time,
+            'Item Time management': self.controller.time_management,
             'Create Offer': self.controller.create_offer,
             'Create Invoice': self.controller.create_invoice,
             'Settings': self.controller.settings_window

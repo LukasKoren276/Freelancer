@@ -1,4 +1,3 @@
-import tkinter as tk
 import customtkinter as ctk
 
 from helpers.constants import Constants as Const
@@ -20,12 +19,11 @@ class SpecificItemWindow(ctk.CTkToplevel):
         self.selected_customer = None
         self.selected_project = None
         self.selected_item = None
-        self.items = None
         self.entries = []
 
         self.fields = {
-            'item_name': (tk.StringVar(), 'Item Name'),
-            'item_note': (tk.StringVar(), 'Item Note'),
+            'item_name': (ctk.StringVar(), 'Item Name'),
+            'item_note': (ctk.StringVar(), 'Item Note'),
             'item_price_per_unit': (ctk.StringVar(), 'Price per Unit'),
             'price_unit': (ctk.StringVar(), 'Price Units')
         }
@@ -33,7 +31,7 @@ class SpecificItemWindow(ctk.CTkToplevel):
         self.setup_window()
         self.create_window_objects()
 
-    def setup_window(self):
+    def setup_window(self) -> None:
         self.title(WindowHelper.get_title(self.entity_name, self.mode))
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=0)
@@ -145,10 +143,10 @@ class SpecificItemWindow(ctk.CTkToplevel):
     def on_customer_select(self, event=None) -> None:
         self.selected_customer = self.customer_map[self.customer_combobox.get()]
         self.clear_fields()
-        self.reset_combobox(self.project_combobox)
+        WindowHelper.reset_combobox(self.project_combobox)
 
         if self.mode != Const.mode_add:
-            self.reset_combobox(self.item_combobox)
+            WindowHelper.reset_combobox(self.item_combobox)
 
         if self.selected_customer is not None:
             self.load_projects_for_selected_customer()
@@ -173,7 +171,7 @@ class SpecificItemWindow(ctk.CTkToplevel):
                 item_names = [
                     item.item_name for item in self.selected_project.items if item.status == Const.status_active
                 ]
-                self.reset_combobox(self.item_combobox, item_names)
+                WindowHelper.reset_combobox(self.item_combobox, item_names)
 
                 if item_names:
                     self.item_combobox.configure(state='readonly')
@@ -218,11 +216,6 @@ class SpecificItemWindow(ctk.CTkToplevel):
     def on_price_unit_select(self, event=None) -> None:
         value = self.price_unit_combobox.get()
         self.fields['price_unit'][0].set(value)
-
-    def reset_combobox(self, combobox, values=None):
-        if combobox:
-            combobox.set('')
-            combobox.configure(state='disabled' if not values else 'readonly', values=values or [])
 
     def clear_fields(self) -> None:
         for (var, _) in self.fields.values():

@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from Gui.modeSelectionWindow import ModeSelectionWindow
+from Gui.timeManagementWindow import TimeManagementWindow
 from controllers.databaseManager import DatabaseManager
 from Gui.customerSelectionWindow import CustomerSelectionWindow
 from Gui.customerWindow import CustomerWindow
@@ -10,7 +11,7 @@ from Gui.settingsWindow import SettingsWindow
 from Gui.specificItemWindow import SpecificItemWindow
 from Gui.projectWindow import ProjectWindow
 from helpers.constants import Constants as Const
-from models import Customer, UserSettings, Project, Item
+from models import Customer, UserSettings, Project, Item, ItemTime
 
 
 class GuiController:
@@ -107,9 +108,22 @@ class GuiController:
         else:
             return None
 
-    # TODO
-    def log_time(self):
-        pass
+    def time_management(self):
+        time_management_window = TimeManagementWindow(self.main_window, self)
+        time_management_window.grab_set()
+        self.main_window.wait_window(time_management_window)
+
+    def time_insertion_window(self, class_name, time_management_window, identifier):
+        time_management_window.grab_release()
+        time_management_window.withdraw()
+
+        window = class_name(
+            self.main_window,
+            self,
+            time_management_window,
+            identifier,
+        )
+        window.grab_set()
 
     # TODO
     def create_offer(self):
@@ -119,7 +133,6 @@ class GuiController:
     def create_invoice(self):
         pass
 
-    # TODO
     def settings_window(self):
         settings_window = SettingsWindow(self.main_window, Const.settings_window, self)
         settings_window.grab_set()
@@ -184,6 +197,9 @@ class GuiController:
 
     def delete_item(self, item: Item) -> bool:
         return self.db_manager.delete_entity(item)
+
+    def save_item_time(self, item_time_data: dict) -> bool:
+        return self.db_manager.save_entity(ItemTime, item_time_data)
 
     def get_user_settings(self) -> UserSettings | None:
         return self.db_manager.get_user_settings()
